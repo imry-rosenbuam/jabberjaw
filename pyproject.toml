@@ -6,6 +6,11 @@ authors = ["imry <imry.rosnebaum@droitfintech.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pandas = "^1.0.4"
+numpy = "^1.18.5"
+pyyaml = "^5.3.1"
+pyarrow = "^0.17.1"
+yfinance = "^0.1.54"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
