@@ -1,13 +1,15 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 import datetime
 import os
 import yaml
+import re
 
 _path = os.environ['TSDB_DATA']
 
-with open(_path + 'market_coord_cfg.YAML') as f:
+parser_regex = '^([A-Za-z0-9]*)(_[A-Za-z0-9]*)?(_[A-Za-z0-9]*)?(_\w*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
 
+with open(_path + 'market_coord_cfg.YAML') as f:
     _mkt_data_cfg = yaml.load(f, Loader=yaml.FullLoader).get("market_coordinates")
 
 
@@ -61,18 +63,15 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     :param mkt_coord_str: input string to be parsed according to the above rules
     :return:
     """
-    mkt_coord = mkt_coord_str.lower().split("@")
-    source = "default" if len(mkt_coord) == 1 else mkt_coord.pop()
-    mkt_coord = mkt_coord.pop()
+    match = re.match(parser_regex, mkt_coord_str).groups()
 
-    mkt_coord = mkt_coord.split(".")
-    quote_style = "default" if len(mkt_coord) == 1 else mkt_coord.pop()
-    mkt_coord = mkt_coord.pop().split("_")
+    source = "default" if not match[5] else match[5].replace('@', '')
+    quote_style = "default" if not match[4] else match[4].replace('@', '')
 
-    archetype = mkt_coord.pop(0)  # get type
-    asset = mkt_coord.pop(0) if len(mkt_coord) else None  # get asset
-    category = mkt_coord.pop(0) if len(mkt_coord) else None  # get class
-    points = mkt_coord if len(mkt_coord) else None  # get point(s)
+    archetype = match[0].replace('_', '')  # get type
+    asset = match[1].replace('_', '') if match[1] else None  # get asset
+    category = match[2].replace('_', '') if match[2] else None  # get class
+    points = match[3][1:].split('_') if match[2] else None  # get point(s)
 
     return MktCoord(archetype, asset, category, points=points, quote=quote_style, source=source)
 
@@ -84,7 +83,7 @@ class DataExtractor:
         return dict()
 
 
-def get_points( coord: MktCoord):
+def get_points(coord: MktCoord):
     if coord.category in get_categories(coord):
         return list(
             mkt_data_cfg()[coord.archetype][coord.asset][coord.category]["points"])
@@ -94,6 +93,7 @@ def get_points( coord: MktCoord):
 
 def get_categories(coord: MktCoord):
     if coord.asset in get_assets(coord):
+        dsf = 1
         return list(mkt_data_cfg()[coord.archetype][coord.asset].keys())
     else:
         return []

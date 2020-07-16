@@ -12,7 +12,7 @@ def file_path(symbol_name):
 def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
     df.to_parquet(file_path(symbol_name))
     if msg == "":
-        print("markeitsed to " + symbol_name)
+        print("marketised to " + symbol_name)
     else:
         print(msg)
 
@@ -32,7 +32,6 @@ def get_data_slice(symbol_name: str, start_time: datetime.datetime, end_time: da
     return df[pd.Timestamp(start_time):pd.Timestamp(end_time)]
 
 
-
 def get_data_ref_date(symbol_name: str, ref_date: datetime.date) -> dict:
     ref_datetime = datetime.datetime.fromordinal(ref_date.toordinal())
     data_slice = get_data_slice(symbol_name, ref_datetime, ref_datetime)
@@ -45,8 +44,9 @@ def get_data_ref_date(symbol_name: str, ref_date: datetime.date) -> dict:
 # TODO: check veracity of the call
 def get_data_point_obs_time(symbol_name: str, ref_date: datetime.date, obs_time: datetime.datetime) -> dict:
     ref_datetime = datetime.datetime.fromordinal(ref_date.toordinal())
-    data_slice = get_data_slice(symbol_name, ref_datetime, ref_datetime)[pd.Timestamp(ref_datetime):(pd.Timestamp(ref_datetime),
-                                                  pd.Timestamp(obs_time))]
+    data_slice = get_data_slice(symbol_name, ref_datetime, ref_datetime)[
+                 pd.Timestamp(ref_datetime):(pd.Timestamp(ref_datetime),
+                                             pd.Timestamp(obs_time))]
 
     if len(data_slice):
         return data_slice[-1].to_dict()

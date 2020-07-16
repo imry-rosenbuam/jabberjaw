@@ -24,3 +24,5 @@ def marketise_equity_index_ticker(symbol: str, ticker: str, start_date: datetime
 def marketise_all_tickers(start_date: datetime, end_date: datetime.date) -> None:
     for k, v in equity_tickers_to_marketsie.items():
         marketise_equity_index_ticker(k, v, start_date, end_date)
+
+

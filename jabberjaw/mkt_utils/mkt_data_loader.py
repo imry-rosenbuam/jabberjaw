@@ -1,8 +1,9 @@
 import os
 import yaml
 import datetime
-from mkt_utils.mkt_classes import MktCoord, DataExtractor, mkt_data_cfg, get_archetypes,get_assets,get_categories,get_points
-import  equity.equity_index_extractor as equity_index_extractor
+from mkt_utils.mkt_classes import MktCoord, DataExtractor, mkt_data_cfg, get_archetypes, get_assets, get_categories, get_points
+import equity.equity_index_extractor as equity_index_extractor
+
 extractors = {
     "none": DataExtractor(),
     None: DataExtractor(),
@@ -14,7 +15,7 @@ def get_extractor(mkt_coord: MktCoord) -> DataExtractor:
     return extractors.get(mkt_coord.archetype)
 
 
-def get_mkt_data( mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetime.datetime = None) -> dict:
+def get_mkt_data(mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetime.datetime = None) -> dict:
     """
 
     :param mkt_coord: mkt coordinate for which we return the data
@@ -32,11 +33,10 @@ def get_mkt_data( mkt_coord: MktCoord, ref_date: datetime.date, obs_time: dateti
         raise Exception("failed to find category in know list")
 
     if not set(mkt_coord.points).issubset(get_points(mkt_coord)) and mkt_coord.points is not None:
-        raise Exception("Point provided are not recognized")
+        raise Exception("Points provided are not recognized")
 
     extractor = get_extractor(mkt_coord)
     if not isinstance(extractor, DataExtractor):
         raise Exception("Returned extractor is not of type DataExtractor")
 
     return extractor.load_mkt_data(mkt_coord, ref_date, obs_time)
-
