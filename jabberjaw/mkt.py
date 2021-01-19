@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass, field
-from mkt_utils.mkt_classes import MktCoord
-from mkt_utils import mkt_data_loader
+from jabberjaw.mkt_utils.mkt_classes import MktCoord
+from jabberjaw.mkt_utils import mkt_data_loader
 
 
 @dataclass

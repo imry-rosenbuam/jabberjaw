@@ -5,7 +5,7 @@ import os
 import yaml
 import re
 
-_path = os.environ['TSDB_DATA']
+_path: str = os.environ['TSDB_DATA']
 
 parser_regex = '^([A-Za-z0-9]*)(_[A-Za-z0-9]*)?(_[A-Za-z0-9]*)?(_\w*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
 
@@ -46,14 +46,24 @@ class MktCoord:
     archetype asset category point(s) quote_style splitting char is _ and . for quote style and @ for source
     """
     archetype: str
-    asset: str
     category: str
+    asset: str
     points: list = None
     quote: str = None
     source: str = None
 
     def get_mkt_tuple(self) -> tuple:
-        return self.archetype, self.asset, self.category, self.quote, self.source
+        return self.archetype, self.category, self.asset, self.quote, self.source
+
+
+def mkt_symbol(mkt_coord: MktCoord, source_override: str = None) -> str:
+    if source_override:
+        return "_".join([mkt_coord.archetype, mkt_coord.category, mkt_coord.asset, "."+mkt_coord.quote, "@"+source_override])
+    elif mkt_coord.source.lower() != 'default':
+        return "_".join([mkt_coord.archetype, mkt_coord.category, mkt_coord.asset, "."+mkt_coord.quote, "@"+mkt_coord.source])
+    else:
+        default_source = get_coord_default_source(mkt_coord)
+        return "_".join([mkt_coord.archetype, mkt_coord.category, mkt_coord.asset, "."+mkt_coord.quote, "@"+default_source])
 
 
 def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
@@ -65,15 +75,22 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     """
     match = re.match(parser_regex, mkt_coord_str).groups()
 
-    source = "default" if not match[5] else match[5].replace('@', '')
-    quote_style = "default" if not match[4] else match[4].replace('@', '')
+    source = "default" if not match[5] else match[5].replace('@', '').lower()
+    quote_style = "default" if not match[4] else match[4].replace('.', '').lower()
 
-    archetype = match[0].replace('_', '')  # get type
-    asset = match[1].replace('_', '') if match[1] else None  # get asset
-    category = match[2].replace('_', '') if match[2] else None  # get class
-    points = match[3][1:].split('_') if match[2] else None  # get point(s)
+    archetype = match[0].replace('_', '').lower()  # get type
+    category= match[1].replace('_', '').lower() if match[1] else None  # get asset
+    asset = match[2].replace('_', '').lower() if match[2] else None  # get class
+    points = match[3][1:].lower().split('_') if match[3] else None  # get point(s)
 
-    return MktCoord(archetype, asset, category, points=points, quote=quote_style, source=source)
+    return MktCoord(archetype, category, asset, points=points, quote=quote_style, source=source)
+
+
+def get_coord_default_source(mkt_coord: MktCoord)->str:
+    if mkt_coord.category.lower() in get_categories(mkt_coord):
+        return mkt_data_cfg()[mkt_coord.archetype][mkt_coord.category][mkt_coord.asset]["default_source"]
+    else:
+        return None
 
 
 class DataExtractor:
@@ -83,23 +100,22 @@ class DataExtractor:
         return dict()
 
 
-def get_points(coord: MktCoord):
+def get_points(coord: MktCoord)->list:
     if coord.category in get_categories(coord):
         return list(
-            mkt_data_cfg()[coord.archetype][coord.asset][coord.category]["points"])
+            mkt_data_cfg()[coord.archetype][coord.category][coord.asset]["points"])
     else:
         return []
 
 
-def get_categories(coord: MktCoord):
-    if coord.asset in get_assets(coord):
-        dsf = 1
-        return list(mkt_data_cfg()[coord.archetype][coord.asset].keys())
-    else:
+def get_assets(coord: MktCoord)->list:
+    if coord.category not in get_categories(coord):
         return []
+    else:
+        return list(mkt_data_cfg()[coord.archetype][coord.category].keys())
 
 
-def get_assets(coord: MktCoord):
+def get_categories(coord: MktCoord)->list:
     if coord.archetype in get_archetypes():
         return list(mkt_data_cfg()[coord.archetype].keys())
     else:
@@ -111,3 +127,8 @@ def get_archetypes() -> list:
     return a list of all archetypes
     """
     return list(mkt_data_cfg().keys())
+
+if __name__ =="__main__":
+    mkt_coord_str = "equity_index_snp500_spot.bla@yahoo"
+    match = re.match(parser_regex, mkt_coord_str).groups()
+    x = 1

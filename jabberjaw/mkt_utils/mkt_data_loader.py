@@ -1,8 +1,8 @@
 import os
 import yaml
 import datetime
-from mkt_utils.mkt_classes import MktCoord, DataExtractor, mkt_data_cfg, get_archetypes, get_assets, get_categories, get_points
-import equity.equity_index_extractor as equity_index_extractor
+from .mkt_classes import MktCoord, DataExtractor, mkt_data_cfg, get_archetypes, get_assets, get_categories, get_points
+from ..equity import equity_index_extractor as equity_index_extractor
 
 extractors = {
     "none": DataExtractor(),

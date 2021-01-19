@@ -1,6 +1,5 @@
-import pyarrow.parquet as pq
 import pandas as pd
-import mkt_utils.mkt_classes as mkt_classes
+import jabberjaw.mkt_utils.mkt_classes as mkt_classes
 import os
 import datetime
 
@@ -9,8 +8,10 @@ def file_path(symbol_name):
     return mkt_classes.tsdb_path() + symbol_name.upper() + ".parquet"
 
 
+# parquet is not working for py 3.9
 def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
-    df.to_parquet(file_path(symbol_name))
+    # df.to_parquet(file_path(symbol_name))
+    df.to_hdf(file_path(symbol_name), 'df')
     if msg == "":
         print("marketised to " + symbol_name)
     else:
@@ -19,7 +20,8 @@ def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
 
 def market_data_load(symbol_name: str) -> pd.DataFrame:
     if os.path.isfile(file_path(symbol_name)):
-        df = pd.read_parquet(file_path(symbol_name))
+        # df = pd.read_parquet(file_path(symbol_name))
+        df:pd.DataFrame = pd.read_hdf(file_path(symbol_name), 'df')
         return df
 
     return pd.DataFrame()
@@ -59,3 +61,13 @@ def get_data_point(symbol_name: str, ref_date: datetime.date, obs_time: datetime
         return get_data_ref_date(symbol_name, ref_date)
     else:
         return get_data_point_obs_time(symbol_name, ref_date, obs_time)
+
+
+def get_data_point_mkt(mkt_coord: mkt_classes.MktCoord, ref_date: datetime.date,
+                       obs_time: datetime.datetime = None) -> dict:
+    symbol: str = mkt_classes.mkt_symbol(mkt_coord)
+    return get_data_point(symbol, ref_date, obs_time)
+
+if __name__ == '__main__':
+    s = market_data_load("TESLA")
+    x=1
