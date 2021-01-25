@@ -12,6 +12,8 @@ pandas-datareader = "^0.9.0"
 matplotlib = "^3.3.3"
 pyaml = "^20.4.0"
 tables = "^3.6.1"
+bs4 = "^0.0.1"
+dpath = "^2.0.1"
 
 
 

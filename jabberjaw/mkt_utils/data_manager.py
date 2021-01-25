@@ -19,7 +19,7 @@ def download_data_eod(ticker: str, source: str, start_date: datetime.datetime,
 
 
 if __name__ == "__main__":
-    tck = "TSLA"
+    tck = "WAB"
     strt = datetime.datetime(year=2010, month=1, day=1)
     end = datetime.datetime(year=2020, month=12, day=31)
     src = 'yahoo'

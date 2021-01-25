@@ -21,7 +21,7 @@ def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
 def market_data_load(symbol_name: str) -> pd.DataFrame:
     if os.path.isfile(file_path(symbol_name)):
         # df = pd.read_parquet(file_path(symbol_name))
-        df:pd.DataFrame = pd.read_hdf(file_path(symbol_name), 'df')
+        df: pd.DataFrame = pd.read_hdf(file_path(symbol_name), 'df')
         return df
 
     return pd.DataFrame()
@@ -68,6 +68,7 @@ def get_data_point_mkt(mkt_coord: mkt_classes.MktCoord, ref_date: datetime.date,
     symbol: str = mkt_classes.mkt_symbol(mkt_coord)
     return get_data_point(symbol, ref_date, obs_time)
 
+
 if __name__ == '__main__':
     s = market_data_load("TESLA")
-    x=1
+    x = 1
