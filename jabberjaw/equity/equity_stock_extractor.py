@@ -33,9 +33,16 @@ def market_data_load(mkt_coord: mkt_classes.MktCoord, ref_date: datetime.date, o
     return dmp.get_data_point_mkt(mkt_coord, ref_date, obs_time)
 
 
-def load_equity_cash_market_data(symbol: str) -> pd.DataFrame:
-    mkt_str: str = "_".join(["equity", "stock", "cash", symbol])
-    mkt_coord: mkt_classes.MktCoord = mkt_classes.parse_mkt_coord(mkt_str)
-    mkt_symbol: str = mkt_classes.mkt_symbol(mkt_coord)
+def load_equity_cash_market_data(symbol: str, source: str = "DEFAULT") -> pd.DataFrame:
+    mkt_c = mkt_classes.MktCoord('equity', 'stock', 'cash', (symbol,), source=source)
+    mkt_symbol = mkt_c.mkt_symbol()
     df = dmp.market_data_load(mkt_symbol)
     return df
+
+
+def mkt_coord_equity_coord(ticker: str, mkt_type: str, mkt_asset: str, source: str = None) -> mkt_classes.MktCoord:
+    mkt_str: str = "_".join(["equity", mkt_type, mkt_asset, ticker])
+    if source:
+        mkt_str += '@' + source
+    mkt_coord: mkt_classes.MktCoord = mkt_classes.parse_mkt_coord(mkt_str)
+    return mkt_coord

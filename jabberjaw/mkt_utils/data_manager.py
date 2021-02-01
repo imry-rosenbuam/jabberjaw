@@ -13,7 +13,7 @@ def download_data_eod(ticker: str, source: str, start_date: datetime.datetime,
 
     timestamps = list(df.index)
     obs_times = list(map(lambda x: x + pd.Timedelta('1 days') + pd.Timedelta('-1 sec'), timestamps))
-    index = pd.MultiIndex.from_arrays([timestamps, obs_times], names=["ref_date", "obs_time"])
+    index = pd.MultiIndex.from_arrays([timestamps, obs_times], names=["Ref_Date", "Obs_Time"])
 
     return pd.DataFrame(index=index, data=df.values, columns=df.columns)
 

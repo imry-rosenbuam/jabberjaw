@@ -5,12 +5,15 @@ import datetime
 import dpath.util as dpath
 import jabberjaw.equity.equity_stock_extractor as equity_stock
 
-source = "yahoo"
 
-
-def marketise_equity_index_ticker(ticker: str, start_date: datetime.date,
+def marketise_equity_index_ticker(ticker: str, source: str, start_date: datetime.date,
                                   end_date: datetime.date, overwrite: bool = False) -> None:
-    df = equity_stock.load_equity_cash_market_data(ticker)
+
+    mkt_c = mkt_classes.MktCoord('equity', 'stock', 'cash', (ticker,), source=source)
+
+    mkt_symbol = mkt_c.mkt_symbol()
+
+    df = dmp.market_data_load(mkt_symbol)
 
     if not df.empty and not overwrite:
         print(ticker + " already MARKETISED")
@@ -23,16 +26,16 @@ def marketise_equity_index_ticker(ticker: str, start_date: datetime.date,
         df = df_new
     else:
         df.update(df_new)
-
     dmp.market_data_save(mkt_symbol, df)
 
 
 def marketise_all_tickers(start_date: datetime, end_date: datetime.date, overwrite: bool = False) -> None:
     mkt_cfg = mkt_classes.mkt_data_cfg()
     xpath = '{0}/{1}/{2}'.format("equity", "stock", "cash")
-    equity_tickers_to_marketsie = [i for i in dpath.search(mkt_cfg, xpath, yielded=True)].pop()[1]['points']
-    for k in equity_tickers_to_marketsie:
-        marketise_equity_index_ticker(k, start_date, end_date, overwrite=overwrite)
+    equity_tickers_to_marketise = [i for i in dpath.search(mkt_cfg, xpath, yielded=True)].pop()[1]['points']
+    source = [i for i in dpath.search(mkt_cfg, xpath, yielded=True)].pop()[1]['default_source']
+    for k in equity_tickers_to_marketise:
+        marketise_equity_index_ticker(k, source, start_date, end_date, overwrite=overwrite)
 
 
 if __name__ == '__main__':

@@ -12,15 +12,15 @@ def load_sp500_tickers() -> list:
     table = soup.find('table', {'class': 'wikitable sortable'})
     tickers = []
     for row in table.findAll('tr')[1:]:
-        ticker = row.findAll('td')[0].text.replace('\n', '').replace(".","-")
+        ticker = row.findAll('td')[0].text.replace('\n', '').replace(".", "-")
         tickers.append(ticker)
     return tickers
 
 
 def save_snp_500_tickers(tickers: list) -> None:
-    mkt_class = "equity"
-    mkt_type = "stock"
-    mkt_asset = "cash"
+    mkt_class = "equity".upper()
+    mkt_type = "stock".upper()
+    mkt_asset = "cash".upper()
     market_coordinates = mkt_classes.mkt_data_cfg()
     # lets load the defaults and then see if there is tsdb yaml to overwrite base defaults
     defaults = mkt_coord_defaults.defaults.copy()
@@ -48,8 +48,6 @@ def save_snp_500_tickers(tickers: list) -> None:
 
 
 if __name__ == '__main__':
-
-
     xx = 1
     tickers1 = load_sp500_tickers()
     save_snp_500_tickers(tickers1)

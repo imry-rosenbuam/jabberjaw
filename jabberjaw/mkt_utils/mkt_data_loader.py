@@ -23,7 +23,7 @@ def get_mkt_data(mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetim
     :param obs_time: latest acceptable observation time
     :return: a dict containing the market data
     """
-    if mkt_coord.mkt_class not in get_mkt_assets():
+    if mkt_coord.mkt_class not in get_mkt_assets(mkt_coord):
         raise Exception("failed to have a asset_class to load")
 
     if mkt_coord.mkt_type not in get_mkt_types(mkt_coord):
