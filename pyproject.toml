@@ -15,6 +15,7 @@ bs4 = "^0.0.1"
 dpath = "^2.0.1"
 tables = "^3.6.1"
 mpl-finance = "^0.10.1"
+mplfinance = "^0.12.7-alpha.5"
 
 [tool.poetry.dev-dependencies]
 

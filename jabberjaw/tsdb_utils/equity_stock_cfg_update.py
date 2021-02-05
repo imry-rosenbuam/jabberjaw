@@ -2,7 +2,7 @@ import bs4 as bs
 import requests
 import yaml
 import jabberjaw.mkt_utils.mkt_classes as mkt_classes
-import jabberjaw.tsdb_utils.mkt_coord_defaults as mkt_coord_defaults
+import mkt_coord_defaults as mkt_coord_defaults
 import dpath.util as dp
 
 
@@ -48,6 +48,5 @@ def save_snp_500_tickers(tickers: list) -> None:
 
 
 if __name__ == '__main__':
-    xx = 1
     tickers1 = load_sp500_tickers()
     save_snp_500_tickers(tickers1)

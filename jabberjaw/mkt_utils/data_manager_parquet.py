@@ -74,4 +74,3 @@ def get_data_point_mkt(mkt_coord: mkt_classes.MktCoord, ref_date: datetime.date,
 
 if __name__ == '__main__':
     s = market_data_load("TESLA")
-    x = 1

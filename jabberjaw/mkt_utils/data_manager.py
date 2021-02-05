@@ -25,4 +25,3 @@ if __name__ == "__main__":
     src = 'yahoo'
     d = download_data_eod(tck, src, strt, end)
 
-    x = 1

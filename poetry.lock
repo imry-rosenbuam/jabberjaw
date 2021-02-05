@@ -117,6 +117,18 @@ python-versions = "*"
 matplotlib = "*"
 
 [[package]]
+name = "mplfinance"
+version = "0.12.7a5"
+description = "Utilities for the visualization, and visual analysis, of financial data"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+matplotlib = "*"
+pandas = "*"
+
+[[package]]
 name = "numexpr"
 version = "2.7.2"
 description = "Fast numerical expression evaluator for NumPy"
@@ -280,7 +292,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "bb188200aa7708a3e4e5ff511f87090a5586832652c074c8a882a55ff07233c7"
+content-hash = "1d671aff6ed32b9fdd5cb678f4b66e985297bdec94f5201b2a34a6e8bd052c92"
 
 [metadata.files]
 beautifulsoup4 = [
@@ -413,6 +425,10 @@ matplotlib = [
 mpl-finance = [
     {file = "mpl_finance-0.10.1-py3-none-any.whl", hash = "sha256:63e712b300f2d479930a5c6e70a1c51ef31c330a1a7f4d2d3182a3706c3540f5"},
     {file = "mpl_finance-0.10.1.tar.gz", hash = "sha256:1b33c11ecf11ea0824c6493707a410dcfa542ed498f42e37f28958a0e5d4090e"},
+]
+mplfinance = [
+    {file = "mplfinance-0.12.7a5-py3-none-any.whl", hash = "sha256:36804e76c0df86d66187184845debaf7bd0afe4599c1aa9a8e3f33161797e7fb"},
+    {file = "mplfinance-0.12.7a5.tar.gz", hash = "sha256:883d91fca89ea471f609695a474863c53e36b0d2367a1e536738a847f7e8a0e5"},
 ]
 numexpr = [
     {file = "numexpr-2.7.2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:f55c06d0cc9407932fc91e1cbb9458a9fbe4e5d79e9f18cd1ae8802fe52b0c1b"},

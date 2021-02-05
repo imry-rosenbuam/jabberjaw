@@ -25,7 +25,7 @@ else:
     __mkt_defaults_cfg = {}
 
 
-def     mkt_data_cfg() -> dict:
+def mkt_data_cfg() -> dict:
     return __mkt_data_cfg
 
 
@@ -72,7 +72,7 @@ class MktCoord:
     quote: str = None
     _quote: str = field(default=None, init=False, repr=False)
     source: str = None
-    _source: str = field(default=None,init=False, repr=False)
+    _source: str = field(default=None, init=False, repr=False)
 
     def get_mkt_tuple(self) -> tuple:
         return self.mkt_class, self.mkt_type, self.mkt_asset, self.quote, self.source
@@ -130,13 +130,14 @@ class MktCoord:
 
     def deepcopy(self):
         return copy.deepcopy(self)
+
     # def __copy__(self):
     #    return copy.copy(self)
 
     # def __deepcopy__(self, memodict={}):
     #    return copy.deepcopy(self)
 
-    def mkt_symbol(self, source_override = None) -> str:
+    def mkt_symbol(self, source_override=None) -> str:
         mkt_str = ""
         quote_string = '.' + self.quote if self.quote else ""
         if source_override:
@@ -177,7 +178,8 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
 
 def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
     if mkt_coord.mkt_asset.upper() in [mkt_asset.upper() for mkt_asset in get_mkt_assets(mkt_coord)]:
-        return mkt_data_cfg()[mkt_coord.mkt_class.upper()][mkt_coord.mkt_type.upper()][mkt_coord.mkt_asset.upper()]["default_source"].upper()
+        return mkt_data_cfg()[mkt_coord.mkt_class.upper()][mkt_coord.mkt_type.upper()][mkt_coord.mkt_asset.upper()][
+            "default_source"].upper()
     else:
         return None
 
@@ -222,9 +224,6 @@ if __name__ == "__main__":
     mkt_coord_str_1 = "equity_index_snp500_spot.bla@yahoo"
     mkt_coord_str_1 = "equity_index_snp500_spot.bla"
     match1 = re.match(parser_regex, mkt_coord_str_1).groups()
-    #ßmkt_c = parse_mkt_coord(mkt_coord_str_1)
 
-    mkt_c2 = MktCoord("equity", "stock", "cash",("a","b"))
+    mkt_c2 = MktCoord("equity", "stock", "cash", ("a", "b"))
 
-    #d = mkt_c.copy()
-    x = 1

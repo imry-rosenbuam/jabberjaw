@@ -1,9 +1,10 @@
+import datetime
+
+import dpath.util as dpath
+
 from jabberjaw.mkt_utils import data_manager as dm
 from jabberjaw.mkt_utils import data_manager_parquet as dmp
 from jabberjaw.mkt_utils import mkt_classes
-import datetime
-import dpath.util as dpath
-import jabberjaw.equity.equity_stock_extractor as equity_stock
 
 
 def marketise_equity_index_ticker(ticker: str, source: str, start_date: datetime.date,
@@ -42,4 +43,3 @@ if __name__ == '__main__':
     start = datetime.date(year=2008, month=1, day=1)
     end = datetime.date.today()
     marketise_all_tickers(start, end)
-    x = 1

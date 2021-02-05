@@ -1,5 +1,5 @@
-from ..mkt_utils import data_manager_parquet as dmp
-from ..mkt_utils import mkt_classes as mkt_classes
+from jabberjaw.mkt_utils import data_manager_parquet as dmp
+from jabberjaw.mkt_utils import mkt_classes as mkt_classes
 import pandas as pd
 import datetime
 
