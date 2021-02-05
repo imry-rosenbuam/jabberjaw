@@ -10,7 +10,7 @@ def file_path(symbol_name):
 
 # parquet is not working for py 3.9
 def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
-    # df.to_parquet(file_path(symbol_name))
+    # df.to_parquet(file_path(symbol_name)) for now we use HDF instead of parquet as it is not available for py 3.9
     if not os.path.isdir(mkt_classes.tsdb_path() + "data"):
         os.mkdir(mkt_classes.tsdb_path() + "data")
 
@@ -23,7 +23,7 @@ def market_data_save(symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
 
 def market_data_load(symbol_name: str) -> pd.DataFrame:
     if os.path.isfile(file_path(symbol_name)):
-        # df = pd.read_parquet(file_path(symbol_name))
+        # df = pd.read_parquet(file_path(symbol_name)) for now we use HDF instead of parquet as it is not available for py 3.9
         df: pd.DataFrame = pd.read_hdf(file_path(symbol_name), 'df')
         return df
 

@@ -158,7 +158,7 @@ class MktCoord:
 
 def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     """
-     mkt_class asset mkt_type point(s) quote_style splitting char is _ and . for quote style and @ for a source
+     mkt_class mkt_type mkt_asset point(s) quote_style splitting char is _ and . for quote style and @ for a source
 
     :param mkt_coord_str: input string to be parsed according to the above rules
     :return:
