@@ -1,4 +1,4 @@
-import equity_stock_extractor as ese
+import jabberjaw.equity.equity_stock_loader as ese
 import matplotlib.pyplot as plt
 from matplotlib import style
 # from mplfinance import candlestick_ohlc

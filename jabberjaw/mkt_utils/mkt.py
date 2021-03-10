@@ -1,7 +1,7 @@
 import datetime
 from dataclasses import dataclass, field
-from mkt_utils.mkt_classes import MktCoord
-from mkt_utils import mkt_data_loader
+from jabberjaw.mkt_utils.mkt_classes import MktCoord
+from jabberjaw.data_manager import mkt_data_manager
 
 
 @dataclass
@@ -23,5 +23,9 @@ class Mkt:
         return self._data.get(mkt_coord.get_mkt_tuple())
 
     def _load_mkt_data(self, mkt_coord: MktCoord) -> None:
-        self._data[mkt_coord.get_mkt_tuple()] = mkt_data_loader.get_mkt_data(mkt_coord, self._ref_date,
-                                                                             obs_time=self._obs_time)
+        self._data[mkt_coord.get_mkt_tuple()] = mkt_data_manager.get_mkt_data(mkt_coord, self._ref_date,
+                                                                              obs_time=self._obs_time)
+
+
+if __name__ == '__main__':
+    pass

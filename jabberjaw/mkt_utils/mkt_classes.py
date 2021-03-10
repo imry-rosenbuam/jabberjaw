@@ -60,6 +60,7 @@ class LocalSingleton(object):
 class MktCoord:
     """
     mkt_class mkt_type  mkt_asset point(s) quote_style splitting char is _ and . for quote style and @ for source
+    Note: this is a dataclass and as such doesn not have an __init__ method as it is generated at initialization
     """
     mkt_class: str
     _mkt_class: str = field(init=False, repr=False)
@@ -184,15 +185,8 @@ def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
         return None
 
 
-class DataExtractor:
-
-    @classmethod
-    def load_mkt_data(cls, mkt_coord: MktCoord, ref_data: datetime.date, obs_time: datetime.datetime) -> dict:
-        return dict()
-
-
 def get_points(coord: MktCoord) -> list:
-    if coord.mkt_type.upper() in [asset.upper for asset in get_mkt_assets(coord)]:
+    if coord.mkt_asset.upper() in [asset.upper() for asset in get_mkt_assets(coord)]:
         return list(
             mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()]["points"])
     else:
@@ -226,4 +220,3 @@ if __name__ == "__main__":
     match1 = re.match(parser_regex, mkt_coord_str_1).groups()
 
     mkt_c2 = MktCoord("equity", "stock", "cash", ("a", "b"))
-

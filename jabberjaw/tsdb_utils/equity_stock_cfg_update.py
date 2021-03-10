@@ -7,6 +7,7 @@ import dpath.util as dp
 
 
 def load_sp500_tickers() -> list:
+    """loads the list of the S&P500 tickers"""
     resp = requests.get('http://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
     soup = bs.BeautifulSoup(resp.text, 'lxml')
     table = soup.find('table', {'class': 'wikitable sortable'})
@@ -18,6 +19,7 @@ def load_sp500_tickers() -> list:
 
 
 def save_snp_500_tickers(tickers: list) -> None:
+    """update the YAML market coordinates config with the SNP500 tickers"""
     mkt_class = "equity".upper()
     mkt_type = "stock".upper()
     mkt_asset = "cash".upper()
@@ -45,6 +47,11 @@ def save_snp_500_tickers(tickers: list) -> None:
 
     with open(mkt_classes.tsdb_path() + 'market_coord_cfg.YAML', "w") as f:
         yaml.dump(mkt_data_cfg, f)
+
+
+def update_mkt_cfg_equity():
+    snp_tickers = load_sp500_tickers()
+    save_snp_500_tickers(snp_tickers)
 
 
 if __name__ == '__main__':
