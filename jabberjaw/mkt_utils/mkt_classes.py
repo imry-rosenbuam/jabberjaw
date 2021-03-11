@@ -26,14 +26,17 @@ else:
 
 
 def mkt_data_cfg() -> dict:
+    """returns the config for mkt data coordinates"""
     return __mkt_data_cfg
 
 
 def mkt_defaults_cfg() -> dict:
+    """returns the config that defines defaults for the mkt coordinates"""
     return __mkt_defaults_cfg
 
 
 def tsdb_path() -> str:
+    """ returns the path to our data directory"""
     return __path
 
 
@@ -60,7 +63,7 @@ class LocalSingleton(object):
 class MktCoord:
     """
     mkt_class mkt_type  mkt_asset point(s) quote_style splitting char is _ and . for quote style and @ for source
-    Note: this is a dataclass and as such doesn not have an __init__ method as it is generated at initialization
+    Note: this is a dataclass and as such does not have an __init__ method as it is generated at initialization
     """
     mkt_class: str
     _mkt_class: str = field(init=False, repr=False)
@@ -139,7 +142,7 @@ class MktCoord:
     #    return copy.deepcopy(self)
 
     def mkt_symbol(self, source_override=None) -> str:
-        mkt_str = ""
+        """returns the mkt symbol for the MktCoord"""
         quote_string = '.' + self.quote if self.quote else ""
         if source_override:
             mkt_str = "_".join(
@@ -178,6 +181,7 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
 
 
 def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
+    """returns the default source for a given MktCoord"""
     if mkt_coord.mkt_asset.upper() in [mkt_asset.upper() for mkt_asset in get_mkt_assets(mkt_coord)]:
         return mkt_data_cfg()[mkt_coord.mkt_class.upper()][mkt_coord.mkt_type.upper()][mkt_coord.mkt_asset.upper()][
             "default_source"].upper()
@@ -186,6 +190,7 @@ def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
 
 
 def get_points(coord: MktCoord) -> list:
+    """ return the valid points for a MktCoord"""
     if coord.mkt_asset.upper() in [asset.upper() for asset in get_mkt_assets(coord)]:
         return list(
             mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()]["points"])
@@ -194,6 +199,7 @@ def get_points(coord: MktCoord) -> list:
 
 
 def get_mkt_assets(coord: MktCoord) -> list:
+    """ returns a list of valid mkt assets for a MktCoord"""
     if coord.mkt_type.upper() not in [mkt_type.upper() for mkt_type in get_mkt_types(coord)]:
         return []
     else:
@@ -201,6 +207,7 @@ def get_mkt_assets(coord: MktCoord) -> list:
 
 
 def get_mkt_types(coord: MktCoord) -> list:
+    """ returns a lost of valid mkt-types for MktCoord"""
     if coord.mkt_class.upper() in [mkt_class.upper() for mkt_class in get_mkt_class()]:
         return list(mkt_data_cfg()[coord.mkt_class.upper()].keys())
     else:

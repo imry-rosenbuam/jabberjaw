@@ -39,7 +39,7 @@ class DataExtractor(ABC):
 
 
 class DataExtractorYahoo(DataExtractor):
-
+    """Yahoo Data Extracotr"""
     def __init__(self):
         self._source = "yahoo"
         self._data_reader = DataReaderPD
@@ -56,7 +56,7 @@ class DataExtractorYahoo(DataExtractor):
 
 
 class DataExtractorMorningStar(DataExtractor):
-
+    """morningstar Data Extractor"""
     def __init__(self):
         self._source = "morningstar"
         self._data_reader = DataReaderPD

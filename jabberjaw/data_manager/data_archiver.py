@@ -5,19 +5,22 @@ from abc import ABC, abstractmethod
 
 
 class DataArchiver(ABC):
+    """ template class for DataArchivers"""
     @classmethod
     @abstractmethod
     def load_mkt_data(cls, symbol_name: str) -> pd.DataFrame:
+        """loads mkt data according to given symbol"""
         return pd.DataFrame()
 
     @classmethod
     @abstractmethod
     def save_mkt_data(cls, symbol_name: str, df: pd.DataFrame, msg: str = "") -> None:
+        """ save data given a symbol"""
         raise Exception("save mkt data not implemented")
 
 
 class DataArchiverParquet(DataArchiver):
-
+    """Parquet implementation of DataArchiver"""
     @staticmethod
     def file_path(symbol_name):
         return mkt_classes.tsdb_path() + "data/" + symbol_name.upper() + ".parquet"

@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 
 class DataReader(ABC):
-
+    """ template class for DataReaders"""
     @classmethod
     @abstractmethod
     def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,

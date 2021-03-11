@@ -4,12 +4,14 @@ from jabberjaw.mkt_utils.mkt_classes import MktCoord, get_mkt_types, get_mkt_ass
     get_points, get_mkt_class
 from jabberjaw.data_manager.data_extractor import *
 
+# data loaders for each of the asset classes and use-cases
 data_loaders = {
     "none": DataLoader(),
     None: DataLoader(),
     "EQUITY": equity_stock_loader.EquityStockLoader()
 }
 
+# a list of all possible extractors for the different sources
 sources = {
     "yahoo": DataExtractorYahoo,
     "morningstar": DataExtractorMorningStar
@@ -17,8 +19,10 @@ sources = {
 
 
 class DataExtractorFactory:
+    """ extractors factory class"""
     @classmethod
     def get_data_extractor(cls, source: str, usecase: str = None, **kwargs) -> DataExtractor:
+        """ extractor factory method"""
         if source in sources:
             extractor = sources[source]
             if issubclass(extractor, DataExtractor):
@@ -27,19 +31,23 @@ class DataExtractorFactory:
                 if usecase and usecase in extractor.keys():
                     return extractor[usecase](**kwargs)
                 else:
-                    raise DataExtractorError("Non existent usecase provided to DataExtractor factory")
+                    raise DataExtractorError("Non existent use-case provided to DataExtractor factory")
 
         else:
             raise DataExtractorError("Failed to find source in registered list")
 
 
 class DataLoaderFactory:
+    """ a factory for retrieving DataLoaders"""
     @classmethod
     def get_loader(cls, mkt_coord: MktCoord) -> DataLoader:
+        """ the factory method for DataLoaders"""
         return data_loaders.get(mkt_coord.mkt_class)
 
 
 def get_data_loader(mkt_coord: MktCoord):
+    """ returns the data loader for MktCoord"""
+
     if mkt_coord.mkt_class not in get_mkt_class():
         raise Exception("failed to have a asset_class to load")
 
@@ -62,6 +70,7 @@ def get_data_loader(mkt_coord: MktCoord):
 
 def get_mkt_data(mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetime.datetime = None) -> dict:
     """
+    returns the mkt data for a refdate
 
     :param mkt_coord: mkt coordinate for which we return the data
     :param ref_date: date for which we return the date
@@ -74,11 +83,13 @@ def get_mkt_data(mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetim
 
 
 def get_history_mkt_data(mkt_coord: MktCoord) -> pd.DataFrame:
+    """ gets the complete time series for a MktCoord"""
     data_loader = get_data_loader(mkt_coord)
     return data_loader.load_mkt_data_history(mkt_coord)
 
 
 def save_mkt_data(mkt_coord: MktCoord, df: pd.DataFrame):
+    """ saves the market data given a MktCoord"""
     DataLoader.save_data(mkt_coord, df)
 
 

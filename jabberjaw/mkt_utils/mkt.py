@@ -6,6 +6,7 @@ from jabberjaw.data_manager import mkt_data_manager
 
 @dataclass
 class Mkt:
+    """ mkt object representing a snapshot of the market for a given timestamp (refdate, obstime) schema"""
     _ref_date: datetime.date
     _obs_time: datetime.datetime = None
     _data: dict = field(default_factory=dict)

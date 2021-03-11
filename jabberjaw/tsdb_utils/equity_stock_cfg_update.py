@@ -50,6 +50,7 @@ def save_snp_500_tickers(tickers: list) -> None:
 
 
 def update_mkt_cfg_equity():
+    """ adds the equity tickers to the mkt data cfg"""
     snp_tickers = load_sp500_tickers()
     save_snp_500_tickers(snp_tickers)
 

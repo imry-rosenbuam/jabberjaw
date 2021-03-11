@@ -1,9 +1,6 @@
 import jabberjaw.equity.equity_stock_loader as ese
 import matplotlib.pyplot as plt
 from matplotlib import style
-# from mplfinance import candlestick_ohlc
-import mplfinance
-import matplotlib.dates as mdates
 import pandas as pd
 from typing import Union, Optional
 
