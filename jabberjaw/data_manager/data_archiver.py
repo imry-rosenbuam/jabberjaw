@@ -41,7 +41,8 @@ class DataArchiverParquet(DataArchiver):
     @classmethod
     def load_mkt_data(cls, symbol_name: str) -> pd.DataFrame:
         if os.path.isfile(cls.file_path(symbol_name)):
-            # df = pd.read_parquet(file_path(symbol_name)) for now we use HDF instead of parquet as it is not available for py 3.9
+            # df = pd.read_parquet(file_path(symbol_name)) for now we use HDF instead of parquet as it is not
+            # available for py 3.9
             df: pd.DataFrame = pd.read_hdf(cls.file_path(symbol_name), 'df')
             return df
 
@@ -50,6 +51,6 @@ class DataArchiverParquet(DataArchiver):
 
 
 if __name__ == '__main__':
-    to_load = 'EQUITY_STOCK_CASH_NOV@YAHOO'
+    to_load = 'EQUITY_SINGLE STOCK_NOV@YAHOO'
     s = DataArchiverParquet.load_mkt_data(to_load)
     xx = 1

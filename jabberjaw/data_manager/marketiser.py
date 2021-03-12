@@ -31,6 +31,6 @@ class Marketiser(ABC):
     @classmethod
     def get_ticker(cls, mkt_coord: MktCoord) -> tuple:
         """ returns the ticker and source for a given MktCoord"""
-        pt = mkt_coord.points[0] if len(mkt_coord.points) else mkt_coord.mkt_asset
+        pt = mkt_coord.mkt_asset
         source = get_coord_default_source(mkt_coord) if mkt_coord.source in [None, "DEFAULT"] else mkt_coord.source
         return pt, source

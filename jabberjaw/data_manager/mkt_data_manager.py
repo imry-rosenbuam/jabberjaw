@@ -23,8 +23,8 @@ class DataExtractorFactory:
     @classmethod
     def get_data_extractor(cls, source: str, usecase: str = None, **kwargs) -> DataExtractor:
         """ extractor factory method"""
-        if source in sources:
-            extractor = sources[source]
+        if source.lower() in sources:
+            extractor = sources[source.lower()]
             if issubclass(extractor, DataExtractor):
                 return extractor(**kwargs)
             else:
@@ -57,7 +57,7 @@ def get_data_loader(mkt_coord: MktCoord):
     if mkt_coord.mkt_asset not in get_mkt_assets(mkt_coord):
         raise Exception("failed to find category in know list")
 
-    if not set(mkt_coord.points).issubset(get_points(mkt_coord)) and mkt_coord.points is not None:
+    if not set(mkt_coord.points).issubset(get_points(mkt_coord)):
         raise Exception("Points provided are not recognized")
 
     data_loader: DataLoader = DataLoaderFactory.get_loader(mkt_coord)
@@ -94,6 +94,7 @@ def save_mkt_data(mkt_coord: MktCoord, df: pd.DataFrame):
 
 
 def extract_data(ticker: str, source: str, start: datetime.datetime, end: datetime.datetime):
+    """extract the data from external source"""
     extractor = DataExtractorFactory.get_data_extractor(source)
     return extractor.load_eod_data(ticker, start, end)
 

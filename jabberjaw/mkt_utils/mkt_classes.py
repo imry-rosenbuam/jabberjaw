@@ -71,7 +71,7 @@ class MktCoord:
     _mkt_type: str = field(init=False, repr=False)
     mkt_asset: str
     _mkt_asset: str = field(init=False, repr=False)
-    points: tuple = None
+    points: tuple = tuple()
     _points: tuple = field(default=None, init=False, repr=False)
     quote: str = None
     _quote: str = field(default=None, init=False, repr=False)
@@ -111,7 +111,7 @@ class MktCoord:
 
     @points.setter
     def points(self, points: tuple):
-        self._points = tuple([s.upper() for s in list(points)]) if not isinstance(points, property) else None
+        self._points = tuple([s.upper() for s in list(points)]) if not isinstance(points, property) else tuple()
 
     @property
     def source(self) -> str:
@@ -134,12 +134,6 @@ class MktCoord:
 
     def deepcopy(self):
         return copy.deepcopy(self)
-
-    # def __copy__(self):
-    #    return copy.copy(self)
-
-    # def __deepcopy__(self, memodict={}):
-    #    return copy.deepcopy(self)
 
     def mkt_symbol(self, source_override=None) -> str:
         """returns the mkt symbol for the MktCoord"""

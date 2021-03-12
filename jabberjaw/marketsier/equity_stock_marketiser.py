@@ -9,9 +9,9 @@ class EquityStockMarketiser(Marketiser):
     @classmethod
     def marketise_equity_index_ticker(cls, ticker: str, source: str, start_date: datetime.date,
                                       end_date: datetime.date, overwrite: bool = False) -> None:
-        mkt_c = mkt_classes.MktCoord('equity', 'stock', 'cash', (ticker,), source=source)
+        mkt_c = mkt_classes.MktCoord('equity', 'single stock', ticker, source=source)
 
-        cls.marketise_mkt_point(mkt_c)
+        cls.marketise_mkt_point(mkt_c, start_date, end_date)
 
     @classmethod
     def marketise_all_tickers_for_stock_cash(cls, start_date: datetime, end_date: datetime.date, overwrite: bool = False) -> None:
@@ -22,12 +22,12 @@ class EquityStockMarketiser(Marketiser):
         :parm overwrite: a flag that determines if we overwrite existing data or not
         """
         mkt_cfg = mkt_classes.mkt_data_cfg()
-        xpath = '{0}/{1}/{2}'.format("equity", "stock", "cash").upper()
+        xpath = '{0}/{1}'.format("equity", "single stock").upper()
         search = dpath.search(mkt_cfg, xpath, yielded=True)
-        equity_tickers_to_marketise = [i for i in search].pop()[1]['points']
-        source = [i for i in dpath.search(mkt_cfg, xpath, yielded=True)].pop()[1]['default_source']
-        for k in equity_tickers_to_marketise:
-            cls.marketise_equity_index_ticker(k, source, start_date, end_date, overwrite=overwrite)
+        equity_tickers_to_marketise = [i for i in search].pop()[1] # let us dump all the tickers and their metadata
+
+        for ticker, metadata in equity_tickers_to_marketise.items():
+            cls.marketise_equity_index_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
 
         print('finished the marketisiation process for {}'.format(xpath))
 
