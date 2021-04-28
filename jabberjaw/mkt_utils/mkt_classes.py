@@ -119,7 +119,7 @@ class MktCoord:
 
     @source.setter
     def source(self, source: str):
-        self._source = str(source).upper() if not isinstance(source, property) else None
+        self._source = str(source).upper() if not isinstance(source, property) else "default"
 
     @property
     def quote(self) -> str:
@@ -138,14 +138,15 @@ class MktCoord:
     def mkt_symbol(self, source_override=None) -> str:
         """returns the mkt symbol for the MktCoord"""
         quote_string = '.' + self.quote if self.quote else ""
+        source_string = "default" if not self.source else self.source.upper()
         if source_override:
             mkt_str = "_".join(
                 [self.mkt_class, self.mkt_type, self.mkt_asset] + list(
                     self.points)) + quote_string + "@" + source_override
-        elif self.source.upper() != 'default'.upper():
+        elif source_string.upper() != 'default'.upper():
             mkt_str = "_".join(
                 [self.mkt_class, self.mkt_type, self.mkt_asset] + list(
-                    self.points)) + quote_string + "@" + self.source
+                    self.points)) + quote_string + "@" + source_string
         else:
             default_source = get_coord_default_source(self)
             mkt_str = "_".join([self.mkt_class, self.mkt_type, self.mkt_asset] + list(

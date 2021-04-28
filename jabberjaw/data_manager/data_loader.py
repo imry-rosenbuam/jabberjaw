@@ -56,7 +56,7 @@ class DataLoader:
     def get_data_point_mkt(cls, mkt_coord: mkt_classes.MktCoord, ref_date: datetime.date,
                            obs_time: datetime.datetime = None) -> dict:
         """ loads mkt data for a single date for a MktCoord"""
-        symbol: str = mkt_coord.mkt_symbol(mkt_coord)
+        symbol: str = mkt_coord.mkt_symbol()
         return cls.get_data_point(symbol, ref_date, obs_time)
 
     @classmethod

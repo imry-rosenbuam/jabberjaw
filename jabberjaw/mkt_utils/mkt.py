@@ -29,4 +29,11 @@ class Mkt:
 
 
 if __name__ == '__main__':
-    pass
+    # an example on how to load mkt data for a specific date and specific data-set
+    dt = datetime.date(year=2020, month=11, day=16)
+    mkt = Mkt(_ref_date=dt)
+    mkt_c = MktCoord("equity", "single stock", "a")
+
+    xxx = mkt.get_mkt_data(mkt_c)
+    x = 1
+    print('le fin')
