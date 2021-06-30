@@ -9,7 +9,7 @@ import re
 
 __path: str = os.environ['TSDB_DATA']
 
-parser_regex = '^([A-Za-z0-9]*)(_[A-Za-z0-9]*)?(_[A-Za-z0-9]*)?(_\w*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
+parser_regex = '^([A-Za-z0-9\s]*)(_[A-Za-z0-9\s]*)?(_[A-Za-z0-9\s]*)?(_[\w\s]*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
 
 if os.path.exists(__path + 'market_coord_cfg.YAML'):
     with open(__path + 'market_coord_cfg.YAML', 'r+') as f:
@@ -111,7 +111,7 @@ class MktCoord:
 
     @points.setter
     def points(self, points: tuple):
-        self._points = tuple([s.upper() for s in list(points)]) if not isinstance(points, property) else tuple()
+        self._points = tuple([s.upper() for s in list(points)]) if (not isinstance(points, property)) and (points is not None) else tuple()
 
     @property
     def source(self) -> str:
@@ -137,7 +137,7 @@ class MktCoord:
 
     def mkt_symbol(self, source_override=None) -> str:
         """returns the mkt symbol for the MktCoord"""
-        quote_string = '.' + self.quote if self.quote else ""
+        quote_string = '.' + self.quote if not (self.quote==None or self.quote.lower()=="default") else ""
         source_string = "default" if not self.source else self.source.upper()
         if source_override:
             mkt_str = "_".join(

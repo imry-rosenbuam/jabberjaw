@@ -1,4 +1,4 @@
-import jabberjaw.equity.equity_stock_loader as ese
+from jabberjaw.equity.equity_stock_loader import EquityStockLoader
 import matplotlib.pyplot as plt
 from matplotlib import style
 import pandas as pd
@@ -12,7 +12,7 @@ def complie_data(tckrs=None) -> Optional[pd.DataFrame]:
 
     main_df: pd.DataFrame = pd.DataFrame()
     for ticker in tickers:
-        df = ese.load_equity_cash_market_data(ticker)
+        df = EquityStockLoader.load_equity_historical_market_data(ticker, "single stock")
         df.reset_index(inplace=True)
         df.set_index('Ref_Date', inplace=True)
         df['{}_HL_pct_change'.format(ticker)] = (df['High'] - df['Low']) / df['Low']
@@ -64,7 +64,7 @@ def view_data_frame_multi(df_in: pd.DataFrame, index: str, columns: list,
 
 
 def view_equity_cash_data(symbol: str) -> None:
-    df = ese.load_equity_cash_market_data(symbol)
+    df = EquityStockLoader.load_equity_historical_market_data(symbol, "single stock")
 
     view_data_frame_multi(df, 'Ref_Date', ['Adj Close', 'Open'])
 

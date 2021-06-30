@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 
 class DataReader(ABC):
     """ template class for DataReaders"""
+
     @classmethod
     @abstractmethod
     def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,
@@ -21,6 +22,7 @@ class DataReader(ABC):
 class DataReaderPD(DataReader):
     # download from source and convert it to the ref date and obs time schema
     # in our case the schema is banal as we only have eod data
+    # we are using panda datareader in order to extract data
     @classmethod
     @abstractmethod
     def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,
@@ -37,6 +39,7 @@ class DataReaderPD(DataReader):
 
 
 if __name__ == "__main__":
+    # an example how to download data using the data reader, specifically with Pandas DataReader
     tck = "WAB"
     strt = datetime.datetime(year=2010, month=1, day=1)
     end = datetime.datetime(year=2020, month=12, day=31)

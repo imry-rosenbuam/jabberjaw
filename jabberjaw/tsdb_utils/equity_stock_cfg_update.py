@@ -51,6 +51,7 @@ def save_snp_500_tickers(tickers: list) -> None:
 
     "added snp500 tickers to the config"
 
+
 def update_mkt_cfg_equity():
     """ adds the equity tickers to the mkt data cfg"""
     snp_tickers = load_sp500_tickers()
@@ -58,4 +59,5 @@ def update_mkt_cfg_equity():
 
 
 if __name__ == '__main__':
+    # an example of hot to update the cfg with the equity symbols
     update_mkt_cfg_equity()
