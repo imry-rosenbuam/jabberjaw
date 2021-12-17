@@ -37,3 +37,4 @@ if __name__ == '__main__':
     end = datetime.date.today()
     EquityStockMarketiser.marketise_all_tickers_for_stock_cash(start, end)
     print('Le Fin')
+

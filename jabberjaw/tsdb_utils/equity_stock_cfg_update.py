@@ -44,12 +44,14 @@ def save_snp_500_tickers(tickers: list) -> None:
         xpath = '{0}/{1}/{2}'.format(mkt_class, mkt_type, mkt_asset)
         dp.new(market_coordinates, xpath, value)
 
+
+    print("data ready to be saved")
     mkt_data_cfg = {'market_coordinates': market_coordinates, 'defaults': defaults}
 
-    with open(mkt_classes.tsdb_path() + 'market_coord_cfg.YAML', "w") as f:
+    with open(mkt_classes.tsdb_path() + 'market_coord_cfg.YAML', "w+") as f:
         yaml.dump(mkt_data_cfg, f)
+        print("added snp500 tickers to the config")
 
-    "added snp500 tickers to the config"
 
 
 def update_mkt_cfg_equity():
@@ -59,5 +61,6 @@ def update_mkt_cfg_equity():
 
 
 if __name__ == '__main__':
-    # an example of hot to update the cfg with the equity symbols
+    # an example of how to update the cfg with the equity symbols
     update_mkt_cfg_equity()
+
