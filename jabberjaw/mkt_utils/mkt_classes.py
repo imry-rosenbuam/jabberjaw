@@ -45,7 +45,8 @@ class Singleton(type, ABC):
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = super(
+                Singleton, cls).__call__(*args, **kwargs)
             super()
         return cls._instances[cls]
 
@@ -111,7 +112,8 @@ class MktCoord:
 
     @points.setter
     def points(self, points: tuple):
-        self._points = tuple([s.upper() for s in list(points)]) if (not isinstance(points, property)) and (points is not None) else tuple()
+        self._points = tuple([s.upper() for s in list(points)]) if (
+            not isinstance(points, property)) and (points is not None) else tuple()
 
     @property
     def source(self) -> str:
@@ -119,7 +121,8 @@ class MktCoord:
 
     @source.setter
     def source(self, source: str):
-        self._source = str(source).upper() if not isinstance(source, property) else "default"
+        self._source = str(source).upper() if not isinstance(
+            source, property) else "default"
 
     @property
     def quote(self) -> str:
@@ -127,7 +130,8 @@ class MktCoord:
 
     @quote.setter
     def quote(self, quote: str):
-        self._quote = str(quote).upper() if not isinstance(quote, property) else None
+        self._quote = str(quote).upper() if not isinstance(
+            quote, property) else None
 
     def copy(self):
         return copy.copy(self)
@@ -137,7 +141,9 @@ class MktCoord:
 
     def mkt_symbol(self, source_override=None) -> str:
         """returns the mkt symbol for the MktCoord"""
-        quote_string = '.' + self.quote if not (self.quote==None or self.quote.lower()=="default") else ""
+        quote_string = '.' + \
+            self.quote if not (
+                self.quote == None or self.quote.lower() == "default") else ""
         source_string = "default" if not self.source else self.source.upper()
         if source_override:
             mkt_str = "_".join(
@@ -165,12 +171,14 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     match = re.match(parser_regex, mkt_coord_str.upper()).groups()
 
     source = "default".upper() if not match[5] else match[5].replace('@', '')
-    quote_style = "default".upper() if not match[4] else match[4].replace('.', '')
+    quote_style = "default".upper(
+    ) if not match[4] else match[4].replace('.', '')
 
     mkt_class = match[0].replace('_', '')  # get type
     mkt_type = match[1].replace('_', '') if match[1] else None  # get asset
     mkt_asset = match[2].replace('_', '') if match[2] else None  # get class
-    points = tuple(match[3][1:].split('_')) if match[3] else None  # get point(s)
+    points = tuple(match[3][1:].split(
+        '_')) if match[3] else None  # get point(s)
 
     return MktCoord(mkt_class, mkt_type, mkt_asset, points=points, quote=quote_style, source=source)
 
@@ -182,6 +190,12 @@ def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
             "default_source"].upper()
     else:
         return None
+
+
+def get_ticker(coord: MktCoord) -> list:
+    """return valid ticker for a MktCoord"""
+    if coord.mkt_asset.upper() in [asset.upper() for asset in get_mkt_assets(coord)]:
+        return mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()].get("ticker", coord.mkt_asset.upper())
 
 
 def get_points(coord: MktCoord) -> list:

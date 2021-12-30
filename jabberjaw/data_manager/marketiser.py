@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from jabberjaw import mkt_utils
+from jabberjaw.mkt_utils import mkt_classes
 from jabberjaw.mkt_utils.mkt_classes import MktCoord, get_coord_default_source
 from jabberjaw.data_manager import mkt_data_manager as dm
 import datetime
@@ -31,6 +33,6 @@ class Marketiser(ABC):
     @classmethod
     def get_ticker(cls, mkt_coord: MktCoord) -> tuple:
         """ returns the ticker and source for a given MktCoord"""
-        pt = mkt_coord.mkt_asset
+        pt = mkt_classes.get_ticker(mkt_coord)
         source = get_coord_default_source(mkt_coord) if mkt_coord.source in [None, "DEFAULT"] else mkt_coord.source
         return pt, source

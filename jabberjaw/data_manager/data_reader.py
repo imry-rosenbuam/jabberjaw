@@ -40,7 +40,7 @@ class DataReaderPD(DataReader):
 
 if __name__ == "__main__":
     # an example how to download data using the data reader, specifically with Pandas DataReader
-    tck = "WAB"
+    tck = "EURUSD=X"
     strt = datetime.datetime(year=2010, month=1, day=1)
     end = datetime.datetime(year=2020, month=12, day=31)
     src = 'yahoo'

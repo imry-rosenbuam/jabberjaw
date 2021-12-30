@@ -7,11 +7,11 @@ from jabberjaw.data_manager.marketiser import Marketiser
 class EquityStockMarketiser(Marketiser):
 
     @classmethod
-    def marketise_equity_index_ticker(cls, ticker: str, source: str, start_date: datetime.date,
+    def marketise_equity_stock_ticker(cls, ticker: str, source: str, start_date: datetime.date,
                                       end_date: datetime.date, overwrite: bool = False) -> None:
         mkt_c = mkt_classes.MktCoord('equity', 'single stock', ticker, source=source)
 
-        cls.marketise_mkt_point(mkt_c, start_date, end_date)
+        cls.marketise_mkt_point(mkt_c, start_date, end_date,overwrite=overwrite)
 
     @classmethod
     def marketise_all_tickers_for_stock_cash(cls, start_date: datetime, end_date: datetime.date, overwrite: bool = False) -> None:
@@ -27,7 +27,7 @@ class EquityStockMarketiser(Marketiser):
         equity_tickers_to_marketise = [i for i in search].pop()[1] # let us dump all the tickers and their metadata
 
         for ticker, metadata in equity_tickers_to_marketise.items():
-            cls.marketise_equity_index_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
+            cls.marketise_equity_stock_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
 
         print('finished the marketisiation process for {}'.format(xpath))
 

@@ -34,12 +34,13 @@ def save_snp_500_tickers(tickers: list) -> None:
     for ticker in tickers:
         mkt_asset = ticker
         points_default = [i for i in
-                          dp.search(market_coordinates, '{0}/{1}/{2}/points'.format(mkt_class, mkt_type, mkt_asset),
+                          dp.search(market_coordinates, f'{mkt_type}/{mkt_class}/{mkt_asset}/points',
                                     yielded=True)]
         points_default = points_default.pop()[1] if len(points_default) else []
         points = list(set(points_default))
-        value = {'points': points}
-        value.update(equity_defaults)
+        exisiting_value = {'points': points}
+        value = equity_defaults.copy()
+        value.update(exisiting_value)
 
         xpath = '{0}/{1}/{2}'.format(mkt_class, mkt_type, mkt_asset)
         dp.new(market_coordinates, xpath, value)

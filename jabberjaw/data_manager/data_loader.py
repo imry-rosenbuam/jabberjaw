@@ -2,9 +2,9 @@ import datetime
 from jabberjaw.mkt_utils.mkt_classes import MktCoord
 import jabberjaw.mkt_utils.mkt_classes as mkt_classes
 import pandas as pd
-from jabberjaw.data_manager.data_archiver import DataArchiver, DataArchiverParquet
+from jabberjaw.data_manager.data_archiver import DataArchiver, DataArchiverArrow
 
-data_archiver = DataArchiverParquet  # let us use this variable as global variable to enable future changes
+data_archiver = DataArchiverArrow # let us use this variable as global variable to enable future changes
 
 
 class DataLoader:
@@ -71,7 +71,7 @@ class DataLoader:
         return cls.get_data_point_mkt(mkt_coord, ref_date, obs_time)
 
     @classmethod
-    def load_mkt_data_history(cls, mkt_coord):
+    def load_mkt_data_history(cls, mkt_coord:MktCoord):
         """loads the full time series of a MktCoord"""
         symbol_name = mkt_coord.mkt_symbol()
         return cls.data_archiver.load_mkt_data(symbol_name)

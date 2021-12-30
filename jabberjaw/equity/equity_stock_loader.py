@@ -1,11 +1,9 @@
 from jabberjaw.data_manager.data_loader import DataLoader
 from jabberjaw.mkt_utils import mkt_classes as mkt_classes
 import datetime
-
-sources = ["default", "morningstar"]
 import pandas as pd
-import datetime
-
+ 
+sources = ["default", "morningstar"]
 
 class EquityStockLoader(DataLoader):
     @classmethod
@@ -24,6 +22,5 @@ if __name__ == "__main__":
     dt = datetime.date(year=2020, month=11, day=17)
     bla = EquityStockLoader.load_equity_market_data("pypl", "single stock", dt)
     bla2 = EquityStockLoader.load_equity_historical_market_data("pypl","single stock")
-    # s=bla.mkt_symbol()
     dd = 1
     xx = 1

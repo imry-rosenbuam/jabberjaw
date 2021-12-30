@@ -10,5 +10,10 @@ defaults = {
         "SINGLE STOCK": {
             'default_source': 'yahoo',
             'extractor': 'default'}
+    },
+    "FX": {
+        "CURRENCY PAIR": {
+            "default_source": "yahoo",
+            "extractor": "default"}
     }
 }
