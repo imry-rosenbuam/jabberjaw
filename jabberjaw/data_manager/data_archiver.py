@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import jabberjaw.mkt_utils.mkt_classes as mkt_classes
+import jabberjaw.utils.mkt_classes as mkt_classes
 from abc import ABC, abstractmethod
 import pyarrow as pa
 

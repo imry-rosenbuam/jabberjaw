@@ -1,7 +1,7 @@
 import bs4 as bs
 import requests
 import yaml
-import jabberjaw.mkt_utils.mkt_classes as mkt_classes
+import jabberjaw.utils.mkt_classes as mkt_classes
 import mkt_coord_defaults as mkt_coord_defaults
 import dpath.util as dp
 

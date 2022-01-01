@@ -1,7 +1,7 @@
 from jabberjaw.data_manager.data_loader import DataLoader
 from jabberjaw.equity import equity_stock_loader as equity_stock_loader
 from jabberjaw.fx import fx_data_loader
-from jabberjaw.mkt_utils.mkt_classes import MktCoord, get_mkt_types, get_mkt_assets, \
+from jabberjaw.utils.mkt_classes import MktCoord, get_mkt_types, get_mkt_assets, \
     get_points, get_mkt_class
 from jabberjaw.data_manager.data_extractor import *
 

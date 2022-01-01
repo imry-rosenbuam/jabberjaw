@@ -1,6 +1,6 @@
 import datetime
-from jabberjaw.mkt_utils.mkt_classes import MktCoord
-import jabberjaw.mkt_utils.mkt_classes as mkt_classes
+from jabberjaw.utils.mkt_classes import MktCoord
+import jabberjaw.utils.mkt_classes as mkt_classes
 import pandas as pd
 from jabberjaw.data_manager.data_archiver import DataArchiver, DataArchiverArrow
 

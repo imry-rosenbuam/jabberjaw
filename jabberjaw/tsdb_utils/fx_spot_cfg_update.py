@@ -1,5 +1,5 @@
 import yaml
-import jabberjaw.mkt_utils.mkt_classes as mkt_classes
+import jabberjaw.utils.mkt_classes as mkt_classes
 import bs4 as bs
 import requests
 import re

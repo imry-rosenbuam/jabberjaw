@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from jabberjaw import mkt_utils
-from jabberjaw.mkt_utils import mkt_classes
-from jabberjaw.mkt_utils.mkt_classes import MktCoord, get_coord_default_source
+from jabberjaw import utils
+from jabberjaw.utils import mkt_classes
+from jabberjaw.utils.mkt_classes import MktCoord, get_coord_default_source
 from jabberjaw.data_manager import mkt_data_manager as dm
 import datetime
 

@@ -1,6 +1,6 @@
 import datetime
 import dpath.util as dp
-from jabberjaw.mkt_utils import mkt_classes
+from jabberjaw.utils import mkt_classes
 from jabberjaw.data_manager.marketiser import Marketiser
 
 class FXSpotMarketiser(Marketiser):
