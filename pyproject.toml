@@ -19,6 +19,7 @@ pyarrow = "^6.0.0"
 julia = "^0.5.6"
 numexpr = "^2.8.0"
 h5py = "^3.6.0"
+holidays = "^0.12"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"

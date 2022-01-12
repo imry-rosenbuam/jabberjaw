@@ -71,14 +71,17 @@ class Instrument:
         fx_rate = 1 if self.ccy.upper() == "USD" else pricing_mkt.get_mkt_data(fx_pair)
 
         return self.price(pricing_mkt) * fx_rate
-
+    
+    def __hash__(self) -> int:
+        s =  sum([hash(x) for x in self.__dict__.values()])
+        return s
 
 class DummyPricer(Pricer):
     @classmethod
     def price(cls,mkt: Mkt) -> float:
         return 1
 
-@dataclass
+
 class DummyInstrument(Instrument):
     
     def __post_init__(self):
@@ -88,7 +91,7 @@ class DummyInstrument(Instrument):
 
 if __name__ == "__main__":
     dt = datetime.date(year=2020, month=11, day=16)
-    mkt = Mkt(_ref_date=dt)
+    mkt = Mkt(ref_date=dt)
     instr = DummyInstrument("EUR",mkt=mkt,pricer=DummyPricer())
     dp = instr.dp()
     print(f"dollar price is {dp}")
