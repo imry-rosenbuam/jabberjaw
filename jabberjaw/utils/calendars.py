@@ -1,51 +1,90 @@
+from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import datetime
-from enum import Enum,unique
-from jabberjaw.utils.mkt_classes import Singleton
-from datetime import date
+from enum import Enum, unique
+from jabberjaw.utils.mkt_classes import singleton
+from datetime import date,timedelta
 import holidays
+from dateutil.relativedelta import relativedelta
+
 
 class DayCountConvention(Enum):
-    ACT_360=object(),      #	The 'Act/360' day count, which divides the actual number of days by 360.
-    ACT_364=object(),	            #   The 'Act/364' day count, which divides the actual number of days by 364.
-    ACT_365_25=object(),	        #   The 'Act/365.25' day count, which divides the actual number of days by 365.25.
-    ACT_365_ACTUAL=object(),	    #   The 'Act/365 Actual' day count, which divides the actual number of days by 366 if a leap day is contained, or by 365 if not.
-    ACT_365F=object(),	        #   The 'Act/365F' day count, which divides the actual number of days by 365 (fixed).
-    ACT_365L=object(),	        #   The 'Act/365L' day count, which divides the actual number of days by 365 or 366.
-    ACT_ACT_AFB=object(),	        #   The 'Act/Act AFB' day count, which divides the actual number of days by 366 if a leap day is contained, or by 365 if not, with additional rules for periods over one year.
-    ACT_ACT_ICMA=object(),	    #   The 'Act/Act ICMA' day count, which divides the actual number of days by the actual number of days in the coupon period multiplied by the frequency.
-    ACT_ACT_ISDA=object(),	    #   The 'Act/Act ISDA' day count, which divides the actual number of days in a leap year by 366 and the actual number of days in a standard year by 365.
-    ACT_ACT_YEAR=object(),	    #   The 'Act/Act Year' day count, which divides the actual number of days by the number of days in the year from the start date.
-    NL_360=object(),	            #   The 'NL/360' day count, which divides the actual number of days omitting leap days by 360.
-    NL_365=object(),	            #   The 'NL/365' day count, which divides the actual number of days omitting leap days by 365.
-    ONE_ONE=object(),	            #   The '1/1' day count, which always returns a day count of 1.
-    THIRTY_360_ISDA=object(),	    #   The '30/360 ISDA' day count, which treats input day-of-month 31 specially.
-    THIRTY_360_PSA=object(),	    #   The '30/360 PSA' day count, which treats input day-of-month 31 and end of February specially.
-    THIRTY_E_360=object(),	    #   The '30E/360' day count, which treats input day-of-month 31 specially.
-    THIRTY_E_360_ISDA=object(),	#   The '30E/360 ISDA' day count, which treats input day-of-month 31 and end of February specially.
-    THIRTY_E_365=object(),	    #   The '30E/365' day count, which treats input day-of-month 31 and end of February specially.
-    THIRTY_EPLUS_360=object(),	#   The '30E+/360' day count, which treats input day-of-month 31 specially.
-    THIRTY_U_360=object(),	    #   The '30U/360' day count, which treats input day-of-month 31 and end of February specially.
-    THIRTY_U_360_EOM=object()	#   The '30U/360 EOM' day count, which treats input day-of-month 31 and end of February specially.
-    
+    # The 'Act/360' day count, which divides the actual number of days by 360.
+    ACT_360 = object(),
+    # The 'Act/364' day count, which divides the actual number of days by 364.
+    ACT_364 = object(),
+    # The 'Act/365.25' day count, which divides the actual number of days by 365.25.
+    ACT_365_25 = object(),
+    # The 'Act/365 Actual' day count, which divides the actual number of days by 366 if a leap day is contained, or by 365 if not.
+    ACT_365_ACTUAL = object(),
+    # The 'Act/365F' day count, which divides the actual number of days by 365 (fixed).
+    ACT_365F = object(),
+    # The 'Act/365L' day count, which divides the actual number of days by 365 or 366.
+    ACT_365L = object(),
+    # The 'Act/Act AFB' day count, which divides the actual number of days by 366 if a leap day is contained, or by 365 if not, with additional rules for periods over one year.
+    #ACT_ACT_AFB = object(),
+    # The 'Act/Act ICMA' day count, which divides the actual number of days by the actual number of days in the coupon period multiplied by the frequency.
+    #ACT_ACT_ICMA = object(),
+    # The 'Act/Act ISDA' day count, which divides the actual number of days in a leap year by 366 and the actual number of days in a standard year by 365.
+    ACT_ACT_ISDA = object(),
+    # The 'Act/Act Year' day count, which divides the actual number of days by the number of days in the year from the start date.
+    #ACT_ACT_YEAR = object(),
+    # The 'NL/360' day count, which divides the actual number of days omitting leap days by 360.
+    NL_360 = object(),
+    # The 'NL/365' day count, which divides the actual number of days omitting leap days by 365.
+    NL_365 = object(),
+    # The '1/1' day count, which always returns a day count of 1.
+    ONE_ONE = object(),
+    # The '30/360 ISDA' day count, which treats input day-of-month 31 specially.
+    THIRTY_360_ISDA = object(),
+    # The '30/360 PSA' day count, which treats input day-of-month 31 and end of February specially.
+    # THIRTY_360_PSA = object(),
+    # The '30E/360' day count, which treats input day-of-month 31 specially.
+    THIRTY_E_360 = object(),
+    # The '30E/360 ISDA' day count, which treats input day-of-month 31 and end of February specially.
+    THIRTY_E_360_ISDA = object(),
+    # The '30E/365' day count, which treats input day-of-month 31 and end of February specially.
+    THIRTY_E_365 = object(),
+    # The '30E+/360' day count, which treats input day-of-month 31 specially.
+    THIRTY_EPLUS_360 = object(),
+    # The '30U/360' day count, which treats input day-of-month 31 and end of February specially.
+    THIRTY_U_360 = object(),
+    # The '30U/360 EOM' day count, which treats input day-of-month 31 and end of February specially.
+    THIRTY_U_360_EOM = object()
+
+
 class RollConventions(Enum):
-    FOLLOWING=object(),	                    #The 'Following' convention which adjusts to the next business day.
-    MODIFIED_FOLLOWING=object(),	        #he 'ModifiedFollowing' convention which adjusts to the next business day without crossing month end.
-    #MODIFIED_FOLLOWING_BI_MONTHLY=object(),	#The 'ModifiedFollowingBiMonthly' convention which adjusts to the next business day without crossing mid-month or month end.
-    MODIFIED_PRECEDING=object(),	        #The 'ModifiedPreceding' convention which adjusts to the previous business day without crossing month start.
-    NEAREST=object(),	                    #The 'Nearest' convention which adjusts Sunday and Monday forward, and other days backward.
-    NO_ADJUST=object(),	                    #The 'NoAdjust' convention which makes no adjustment.
-    PRECEDING=object()	                    #The 'Preceding' convention which adjusts to the previous business day.
+    # The 'Following' convention which adjusts to the next business day.
+    FOLLOWING = object(),
+    # he 'ModifiedFollowing' convention which adjusts to the next business day without crossing month end.
+    MODIFIED_FOLLOWING = object(),
+    # MODIFIED_FOLLOWING_BI_MONTHLY=object(),	#The 'ModifiedFollowingBiMonthly' convention which adjusts to the next business day without crossing mid-month or month end.
+    # The 'ModifiedPreceding' convention which adjusts to the previous business day without crossing month start.
+    MODIFIED_PRECEDING = object(),
+    # The 'Nearest' convention which adjusts Sunday and Monday forward, and other days backward.
+    NEAREST = object(),
+    # The 'NoAdjust' convention which makes no adjustment.
+    NO_ADJUST = object(),
+    # The 'Preceding' convention which adjusts to the previous business day.
+    PRECEDING = object()
 
 
-class HolidayCalenadr(Singleton):
-    def __init__(self,dcc: DayCountConvention = DayCountConvention.ACT_ACT_ISDA, roll: RollConventions=RollConventions.NO_ADJUST,country: str ="USA"):
-        self.dcc = dcc
-        self.roll = roll
-        self.cal = holidays.CountryHoliday(country)
-    
-    def date_roll(self,dt:datetime.date) -> datetime.date:
+@dataclass
+class CalendarConventions():
+    dcc:    DayCountConvention = DayCountConvention.ACT_ACT_ISDA
+    roll:   RollConventions = RollConventions.NO_ADJUST
+    country: str = 'USA'
+
+    def __post_init__(self):
+        self.holidays = holidays.CountryHoliday(self.country)
+
+
+
+class HolidayCalenadr():
+
+    @classmethod
+    def date_roll(cls, conv: CalendarConventions, dt: datetime.date) -> datetime.date:
         """rolls the date according to rolling convention of the calendar
 
         Args:
@@ -54,35 +93,36 @@ class HolidayCalenadr(Singleton):
         Returns:
             datetime.date: the rolled date
         """
-        if dt not in self.cal:
+        if dt not in conv.cal:
             return dt
-        
-        match self.roll:
+
+        match conv.roll:
             case RollConventions.NO_ADJUST:
                 return dt
             case RollConventions.FOLLOWING:
-                return self.next_business_day(dt,1)
+                return cls.next_business_day(dt, 1)
             case RollConventions.PRECEDING:
-                return self.next_business_day(dt,1,False)
+                return cls.next_business_day(dt, 1, False)
             case RollConventions.NEAREST:
-                if dt.weekday in [5,6]:
-                    return self.next_business_day(dt,1)
+                if dt.weekday in [5, 6]:
+                    return cls.next_business_day(dt, 1)
                 else:
-                    return self.next_business_day(dt,1,False)
+                    return cls.next_business_day(dt, 1, False)
             case RollConventions.MODIFIED_FOLLOWING:
-                follow = self.next_business_day(dt,1)
+                follow = cls.next_business_day(dt, 1)
                 if follow.month > dt.month:
-                    return self.next_business_day(dt,1,False)
+                    return cls.next_business_day(dt, 1, False)
                 else:
-                    follow
+                    return follow
             case RollConventions.MODIFIED_PRECEDING:
-                preceding = self.next_business_day(dt,1,False)
+                preceding = cls.next_business_day(dt, 1, False)
                 if preceding.month != dt.month:
-                    return self.next_business_day(dt,1)
+                    return cls.next_business_day(dt, 1)
                 else:
                     return preceding
 
-    def settle_date(self, dt:datetime,business_days) -> datetime.datetime:
+    @classmethod
+    def settle_date(cls, calendar: CalendarConventions, dt: datetime, business_days) -> datetime.datetime:
         """returns the settlement date given the settle lag
 
         Args:
@@ -92,10 +132,11 @@ class HolidayCalenadr(Singleton):
         Returns:
             datetime.datetime: returns the settlement date
         """
-        settle_date = self.next_business_day(dt,business_days)
-        return self.roll(settle_date)        
-    
-    def next_business_day(self,start_date:datetime.date,business_days:int, direction: bool = True) -> datetime.date:
+        settle_date = cls.next_business_day(calendar, dt, business_days)
+        return settle_date
+
+    @classmethod
+    def next_business_day(cls, calendar: CalendarConventions, start_date: datetime.date, business_days: int, direction: bool = True) -> datetime.date:
         """Generates the next business day
 
         Args:
@@ -106,19 +147,21 @@ class HolidayCalenadr(Singleton):
         Returns:
             datetime.date: return the business day using the inherhent holiday clanendar
         """
-        one_day:datetime.timedelta = datetime.timedelta(days=1) if direction else datetime.timedelta(days=-1)
-        temp_day:datetime.date = start_date
+        one_day: datetime.timedelta = datetime.timedelta(
+            days=1) if direction else datetime.timedelta(days=-1)
+        temp_day: datetime.date = start_date
         for i in range(business_days):
-            next_day= temp_day + one_day
+            next_day = temp_day + one_day
             # notice that will only work on countries with normal weekend( sat, sun)
             # TODO: create a custom rule for countries like israel
-            while next_day in self.cal or next_day.weekday in [5,6]:
+            while next_day in calendar.holidays or next_day.weekday in [5, 6]:
                 next_day += one_day
             temp_day = next_day
-            
+
         return temp_day
 
-    def daycount(self,start:datetime.date,end:datetime.date) -> float:
+    @classmethod
+    def daycount(cls, calendar:CalendarConventions, start: datetime.date, end: datetime.date, freq: float = 1) -> float:
         """returns the daycount according to the calendar conventions
 
         Args:
@@ -128,8 +171,59 @@ class HolidayCalenadr(Singleton):
         Returns:
             float: time that elapsed between start and end according to the calendar conventions
         """
-        
+
+        match calendar.dcc:
+            case DayCountConvention.ONE_ONE:
+                return 1
+            case DayCountConvention.ACT_360:
+                return (end - start).days/360
+            case DayCountConvention.ACT_364:
+                return (end - start).days/364
+            case DayCountConvention.ACT_365_25:
+                return (end - start).days/(365.25)
+            case DayCountConvention.ACT_365F:
+                return (end - start).days/365
+            case DayCountConvention.THIRTY_360_ISDA:
+                return cls._30_360(start, end)
+            case DayCountConvention.ACT_ACT_ISDA:
+                return cls._act_act(start,end)
+            case DayCountConvention.ACT_365L:
+                return cls._act_act(start,end)
+            case DayCountConvention.ONE_ONE:
+                return 1
+            
         return 1
     
+    @classmethod
+    def _act_act(cls,start:date,end:date) -> float:
+        # TODO: can it be optimized?
+        frac = 0
+        period = start + relativedelta(years=1)
+        while period < end:
+            frac += 1
+            period += relativedelta(years=1)
+        pre_end = period - relativedelta(years=1)
+        frac += (end-pre_end).days/(period-pre_end).days         
+        return frac
+    
+    @classmethod
+    def is_leap_year(cls, year:int) -> bool:
+        return year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
+    
+    @classmethod
+    def _30_360(cls,start:date, end:date) -> float:
+        year =  end.year -start.year
+        month = end.month - start.month
+        day = end.day - start.day
+        
+        return (year*360 + month * 30 + day)/360
+    
+    
+        
 if __name__ == "__main__":
+    start = datetime.datetime.strptime('10-1-15', '%d-%m-%y').date()
+    
+    end = datetime.datetime.strptime('20-1-16', '%d-%m-%y').date()
+    ss = CalendarConventions(dcc=DayCountConvention.ACT_ACT_ISDA)
+    print(HolidayCalenadr.daycount(ss,start,end))
     print("Le Fin")

@@ -9,11 +9,18 @@ from typing import Optional,Dict
 from jabberjaw.utils.mkt import Mkt
 from jabberjaw.utils.instrument import DummyInstrument,DummyPricer
 import datetime
+from abc import ABC, abstractmethod
+
+
+class AlphaGen(ABC):
+    @abstractmethod
+    def UpdatePortfolio(port:Portfolio,args:dict = {}):
+        pass 
 
 @dataclass
 class Strategy():
     portfolio:Portfolio
-    x: FunctionType
+    x: AlphaGen
     
     def __post_init__(self):
         pass
