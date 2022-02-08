@@ -21,7 +21,7 @@ class DayCountConvention(Enum):
     # The 'Act/365F' day count, which divides the actual number of days by 365 (fixed).
     ACT_365F = object(),
     # The 'Act/365L' day count, which divides the actual number of days by 365 or 366.
-    ACT_365L = object(),
+    # ACT_365L = object(),
     # The 'Act/Act AFB' day count, which divides the actual number of days by 366 if a leap day is contained, or by 365 if not, with additional rules for periods over one year.
     #ACT_ACT_AFB = object(),
     # The 'Act/Act ICMA' day count, which divides the actual number of days by the actual number of days in the coupon period multiplied by the frequency.
@@ -186,8 +186,6 @@ class HolidayCalenadr():
             case DayCountConvention.THIRTY_360_ISDA:
                 return cls._30_360(start, end)
             case DayCountConvention.ACT_ACT_ISDA:
-                return cls._act_act(start,end)
-            case DayCountConvention.ACT_365L:
                 return cls._act_act(start,end)
             case DayCountConvention.ONE_ONE:
                 return 1

@@ -3,6 +3,7 @@ import dpath.util as dpath
 from jabberjaw.utils import mkt_classes
 from jabberjaw.data_manager.marketiser import Marketiser
 
+#TODO: add ccy to make suret that we know the ccy in which the stock is quoted in
 
 class EquityStockMarketiser(Marketiser):
 

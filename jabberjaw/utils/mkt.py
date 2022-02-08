@@ -35,11 +35,11 @@ class Mkt:
         
     def get_mkt_data(self, mkt_coord: MktCoord) -> dict:
         if mkt_coord.get_mkt_tuple() not in self._data.keys():
-            self._load_mkt_data(mkt_coord)
+            self.__load_mkt_data(mkt_coord)
 
         return self._data.get(mkt_coord.get_mkt_tuple())['Adj Close']
 
-    def _load_mkt_data(self, mkt_coord: MktCoord) -> None:
+    def __load_mkt_data(self, mkt_coord: MktCoord) -> None:
         self._data[mkt_coord.get_mkt_tuple()] = mkt_data_manager.get_mkt_data(mkt_coord, self.ref_date,
                                                                               obs_time=self.obs_time)
 

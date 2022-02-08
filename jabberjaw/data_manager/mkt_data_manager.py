@@ -13,7 +13,7 @@ data_loaders = {
     "FX": fx_data_loader.FXDataLoader()
 }
 
-# a list of all possible extractors for the different sources
+# a list of all possible extractors for the different sources 
 sources = {
     "yahoo": DataExtractorYahoo,
     "morningstar": DataExtractorMorningStar
@@ -102,4 +102,5 @@ def extract_data(ticker: str, source: str, start: datetime.datetime, end: dateti
 
 
 if __name__ == '__main__':
+    
     print("Le Fin")
