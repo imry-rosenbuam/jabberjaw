@@ -18,12 +18,15 @@ class FXSpotMarketiser(Marketiser):
         fx_spots = [i for i in search].pop()[1]
 
         for ticker, metadata in fx_spots.items():
-            cls.marketise_fx_spot_pair(ticker,metadata['default_source'],start_date,end_date,overwrite)
-
+            try:
+                cls.marketise_fx_spot_pair(ticker,metadata['default_source'],start_date,end_date,overwrite)
+            except:
+                print(f"failed to marketise {search}")
+                
 if __name__ == "__main__":
     ccy = "usdeur"
     start = datetime.date(year=2000, month=1, day=1)
     end = datetime.date.today()
     #FXSpotMarketiser.marketise_fx_spot_pair(ccy,'yahoo',start,end,overwrite=True)
-    FXSpotMarketiser.marketise_fx_spot_all_pairs(start,end)
+    FXSpotMarketiser.marketise_fx_spot_all_pairs(start,end,overwrite=True)
     print('le fin')

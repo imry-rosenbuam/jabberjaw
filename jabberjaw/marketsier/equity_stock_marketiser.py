@@ -36,6 +36,6 @@ class EquityStockMarketiser(Marketiser):
 if __name__ == '__main__':
     start = datetime.date(year=2000, month=1, day=1)
     end = datetime.date.today()
-    EquityStockMarketiser.marketise_all_tickers_for_stock_cash(start, end)
+    EquityStockMarketiser.marketise_all_tickers_for_stock_cash(start, end,overwrite=True)
     print('Le Fin')
 
