@@ -1,24 +1,28 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import fsolve
-from scipy.stats import lognorm
+from scipy.stats import norm
 
 def bs_call_premium(f: float, k: float, sigma: float, r: float, t: float) -> float:
 
-    return np.exp(-r * t) * bs_call_fwd_premium(f, k, sigma, t)
+    x =  bs_call_fwd_premium(f, k, sigma, t)
 
+    return  np.exp(-r * t) * x
 
 def bs_put_premium(f: float, k: float, sigma: float, r: float, t: float) -> float:
 
-    return np.exp(-r * t) * bs_put_fwd_premium(f, g, sigma, t)
+    return np.exp(-r * t) * bs_put_fwd_premium(f, k, sigma, t)
 
 def bs_call_fwd_premium(f: float, k: float, sigma: float, t: float) -> float:
     
-    return f * lognorm.ppf(d_plus(f, k, sigma, t),1) - k * lognorm.ppf(d_minus(f, k, sigma, t),1)
+     a = f * norm.cdf(d_plus(f, k, sigma, t)) 
+     b = k * norm.cdf(d_minus(f, k, sigma, t))
+
+     return (a - b)
 
 def bs_put_fwd_premium(f: float, k: float, sigma: float, t: float) -> float:
     
-    return f * lognorm.ppf(-1 * d_plus(f, k, sigma, t), 1) - k * lognorm.ppf(-1 * d_minus(f, k, sigma, t),1)
+    return f * norm.ppf(-1 * d_plus(f, k, sigma, t)) - k * norm.ppf(-1 * d_minus(f, k, sigma, t))
 
 def d_plus(f: float, k: float, sigma:float, t: float) -> float:
     
@@ -44,7 +48,13 @@ def implied_vol(f: float, k: float, p: float, t: float, r: float = None, call: b
     return fsolve(price, [0,10])
     
 
-
 if __name__ == "__main__":
-    # TODO: check that the calculations are actually correct    
+    
+    s = 30000
+    k = 25000
+    t = 1
+    r = 0.03 * 0
+    sig = 0.15 * 10  
+    
+    print(bs_call_premium(s * np.exp(r * t),k,sig,r,t))
     print("Le Fin")
