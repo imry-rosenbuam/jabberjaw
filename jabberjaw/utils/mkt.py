@@ -56,15 +56,16 @@ class Mkt:
         return pd.DataFrame()
 
 
-@singleton
 class Mkt_Factory:
     _mkt: Mkt = None
     
-    def get_MKT(self) -> Mkt:
-        if self._mkt:
-            return self._mkt
+    @classmethod
+    def get_MKT(cls) -> Mkt:
+        if cls._mkt:
+            return cls._mkt
         else:
-            return Mkt(datetime.date.today())
+            cls._mkt = Mkt(datetime.date.today())
+            return cls._mkt
         
 if __name__ == '__main__':
     # an example on how to load mkt data for a specific date and specific dataset

@@ -4,7 +4,7 @@ from dataclasses import dataclass,field
 from jabberjaw.utils.instrument import Instrument
 from typing import Optional,Dict
 from jabberjaw.utils.mkt import Mkt
-from jabberjaw.utils.instrument import DummyInstrument,DummyPricer
+from jabberjaw.utils.instrument import DummyInstrument
 import datetime
 
 # let us define an alias for positions tracking
