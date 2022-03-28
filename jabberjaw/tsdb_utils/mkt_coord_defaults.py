@@ -15,5 +15,10 @@ defaults = {
         "CURRENCY PAIR": {
             "default_source": "yahoo",
             "extractor": "default"}
+    },
+    "IR": {
+     "TREASURY RATE": {
+         "default_source": "yahoo",
+         "extractor": "default"}   
     }
 }
