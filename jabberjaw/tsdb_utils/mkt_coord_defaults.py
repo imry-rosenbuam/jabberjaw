@@ -19,6 +19,21 @@ defaults = {
     "IR": {
      "TREASURY RATE": {
          "default_source": "yahoo",
-         "extractor": "default"}   
+         "extractor": "default"},
+     "LIBOR": {
+         "default_source": "yahoo",
+         "extractor": "default"},
+     "FED FUND RATE": {
+         "default_source": "yahoo",
+         "extractor": "default"},
+     "REPO RATE": {
+         "default_source": "yahoo",
+         "extractor": "default"},
+     "RISK FREE RATE": {
+         "default_source": "yahoo",
+         "extractor": "default"},
+     "ZERO RATE": {
+         "default_source": "yahoo",
+         "extractor":"default"}
     }
 }
