@@ -6,6 +6,7 @@ from jabberjaw.utils.mkt_classes import MktCoord
 from jabberjaw.utils.mkt import Mkt
 from dataclasses import dataclass
 import datetime
+
 @instrument
 class SingleNameEquity(Instrument):
     single_name: str = None
