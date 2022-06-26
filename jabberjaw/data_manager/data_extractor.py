@@ -70,3 +70,19 @@ class DataExtractorMorningStar(DataExtractor):
 
     def load_tick_data(self, ticker) -> DataFrame:
         pass
+    
+class DataExtractorFred(DataExtractor):
+    """morningstar Data Extractor"""
+    def __init__(self):
+        self._source = "fred"
+        self._data_reader = DataReaderPD
+
+    def load_eod_data(self, ticker, start: datetime.datetime = datetime.datetime.today(),
+                      end: datetime.datetime = datetime.datetime.today()) -> DataFrame:
+        return self.data_reader.download_data_eod(ticker, self._source, start, end)
+
+    def load_data(self, ticker) -> DataFrame:
+        pass
+
+    def load_tick_data(self, ticker) -> DataFrame:
+        pass

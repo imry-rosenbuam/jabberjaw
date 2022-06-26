@@ -6,10 +6,12 @@ from typing import Union
 import copy
 import yaml
 import re
+from dateutil.relativedelta import relativedelta
+from datetime import date
 
 __path: str = os.environ['TSDB_DATA']
 
-parser_regex = '^([A-Za-z0-9\s]*)(_[A-Za-z0-9\s]*)?(_[A-Za-z0-9\s]*)?(_[\w\s]*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
+parser_regex = '^([A-Za-z0-9\s\-]*)(_[A-Za-z0-9\s\-]*)?(_[A-Za-z0-9\s\-]*)?(_[\w\s\-]*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
 
 if os.path.exists(__path + 'market_coord_cfg.YAML'):
     with open(__path + 'market_coord_cfg.YAML', 'r+') as f:
@@ -52,7 +54,7 @@ def singleton(class_):
 @dataclass
 class MktCoord:
     """
-    mkt_class mkt_type  mkt_asset point(s) quote_style splitting char is _ and . for quote style and @ for source
+    mkt_class mkt_type  mkt_asset point quote_style splitting char is _ and . for quote style and @ for source
     Note: this is a dataclass and as such does not have an __init__ method as it is generated at initialization
     """
     mkt_class: str
@@ -61,15 +63,15 @@ class MktCoord:
     _mkt_type: str = field(init=False, repr=False)
     mkt_asset: str
     _mkt_asset: str = field(init=False, repr=False)
-    points: tuple = tuple()
-    _points: tuple = field(default=None, init=False, repr=False)
+    point: str
+    _point: tuple = field(default=None, init=False, repr=False)
     quote: str = None
     _quote: str = field(default=None, init=False, repr=False)
     source: str = None
     _source: str = field(default=None, init=False, repr=False)
 
     def get_mkt_tuple(self) -> tuple:
-        return self.mkt_class, self.mkt_type, self.mkt_asset, self.quote, self.source
+        return self.mkt_class, self.mkt_type, self.mkt_asset, self.point, self.quote, self.source
 
     @property
     def mkt_class(self) -> str:
@@ -96,13 +98,13 @@ class MktCoord:
         self._mkt_asset = mkt_asset.upper()
 
     @property
-    def points(self):
-        return self._points
+    def point(self):
+        return self._point
 
-    @points.setter
-    def points(self, points: tuple):
-        self._points = tuple([s.upper() for s in list(points)]) if (
-            not isinstance(points, property)) and (points is not None) else tuple()
+    @point.setter
+    def point(self, point: str):
+        self._point = str(point).upper() if not isinstance(
+            point, property) and point is not None else None
 
     @property
     def source(self) -> str:
@@ -134,25 +136,23 @@ class MktCoord:
             self.quote if not (
                 self.quote == None or self.quote.lower() == "default") else ""
         source_string = "default" if not self.source else self.source.upper()
+        point = [self.point] if self.point else []
         if source_override:
             mkt_str = "_".join(
-                [self.mkt_class, self.mkt_type, self.mkt_asset] + list(
-                    self.points)) + quote_string + "@" + source_override
+                [self.mkt_class, self.mkt_type, self.mkt_asset] + point) + quote_string + "@" + source_override
         elif source_string.upper() != 'default'.upper():
             mkt_str = "_".join(
-                [self.mkt_class, self.mkt_type, self.mkt_asset] + list(
-                    self.points)) + quote_string + "@" + source_string
+                [self.mkt_class, self.mkt_type, self.mkt_asset] + point) + quote_string + "@" + source_string
         else:
             default_source = get_coord_default_source(self)
-            mkt_str = "_".join([self.mkt_class, self.mkt_type, self.mkt_asset] + list(
-                self.points)) + quote_string + "@" + default_source
+            mkt_str = "_".join([self.mkt_class, self.mkt_type, self.mkt_asset] + point) + quote_string + "@" + default_source
 
         return mkt_str.upper()
 
 
 def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     """
-     mkt_class mkt_type mkt_asset point(s) quote_style splitting char is _ and . for quote style and @ for a source
+     mkt_class mkt_type mkt_asset point quote_style splitting char is _ and . for quote style and @ for a source
 
     :param mkt_coord_str: input string to be parsed according to the above rules
     :return:
@@ -166,10 +166,9 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     mkt_class = match[0].replace('_', '')  # get type
     mkt_type = match[1].replace('_', '') if match[1] else None  # get asset
     mkt_asset = match[2].replace('_', '') if match[2] else None  # get class
-    points = tuple(match[3][1:].split(
-        '_')) if match[3] else None  # get point(s)
+    point =  match[3].replace('_', '') if match[2] else None # get point
 
-    return MktCoord(mkt_class, mkt_type, mkt_asset, points=points, quote=quote_style, source=source)
+    return MktCoord(mkt_class, mkt_type, mkt_asset, point=point, quote=quote_style, source=source)
 
 
 def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
@@ -184,11 +183,16 @@ def get_coord_default_source(mkt_coord: MktCoord) -> Union[str, None]:
 def get_ticker(coord: MktCoord) -> list:
     """return valid ticker for a MktCoord"""
     if coord.mkt_asset.upper() in [asset.upper() for asset in get_mkt_assets(coord)]:
-        return mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()].get("ticker", coord.mkt_asset.upper())
-
+        tickers = mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()].get("tickers", coord.mkt_asset.upper())
+        points = get_points(coord)
+        if not len(points):
+            return tickers
+        else:
+            d = {points[i]:tickers[i] for i in range(len((points)))}
+            return d[coord.point]
 
 def get_points(coord: MktCoord) -> list:
-    """ return the valid points for a MktCoord"""
+    """ return the valid point for a MktCoord"""
     if coord.mkt_asset.upper() in [asset.upper() for asset in get_mkt_assets(coord)]:
         return list(
             mkt_data_cfg()[coord.mkt_class.upper()][coord.mkt_type.upper()][coord.mkt_asset.upper()]["points"])
@@ -218,7 +222,19 @@ def get_mkt_class() -> list:
     """
     return list(mkt_data_cfg().keys())
 
-
+def tenor_parse(tenor:str) -> relativedelta:
+    regex = "\d{1,2}[MYW]"
+    if not re.match(regex, tenor):
+        raise "Illegal Tenor"
+    if tenor[-1] == "M":
+        return relativedelta(months=int(tenor[:-1]))
+    if tenor[-2:] == "WK":
+         return relativedelta(weeks=int(tenor[:-2]))
+    if tenor[-1] == "Y":
+         return relativedelta(years=int(tenor[:-1]))
+    else:
+        return None
+    
 if __name__ == "__main__":
     mkt_coord_str_1 = "equity_index_snp500_spot.bla@yahoo"
     mkt_coord_str_1 = "equity_index_snp500_spot.bla"

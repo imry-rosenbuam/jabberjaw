@@ -52,6 +52,7 @@ class DataArchiverArrow(DataArchiver):
 
 if __name__ == '__main__':
     to_load = 'EQUITY_SINGLE STOCK_NOV@YAHOO'
+    to_load = 'IR_USD_COM-PAPER-F_3M@FRED'
     s = DataArchiverArrow.load_mkt_data(to_load)
     print(s)
     xx = 1

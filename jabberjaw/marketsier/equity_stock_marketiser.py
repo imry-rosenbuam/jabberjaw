@@ -36,14 +36,17 @@ class EquityStockMarketiser(Marketiser):
         equity_tickers_to_marketise = [i for i in search].pop()[1] # let us dump all the tickers and their metadata
 
         for ticker, metadata in equity_tickers_to_marketise.items():
-            cls.marketise_equity_stock_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
-
+            try:
+                cls.marketise_equity_stock_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
+            except:
+                print(f"failed to marketise {ticker}")
+                
         print('finished the marketisiation process for {}'.format(xpath))
 
 
 if __name__ == '__main__':
     start = datetime.date(year=2000, month=1, day=1)
     end = datetime.date.today()
-    EquityStockMarketiser.marketise_all_tickers_for_stock_cash(start, end,overwrite=True)
+    EquityStockMarketiser.marketise_all_tickers_for_stock_cash(start, end,overwrite=False)
     print('Le Fin')
 

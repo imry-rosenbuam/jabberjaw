@@ -1,6 +1,7 @@
 from jabberjaw.data_manager.data_loader import DataLoader
 from jabberjaw.equity import equity_stock_loader as equity_stock_loader
 from jabberjaw.fx import fx_data_loader
+from jabberjaw.ir import ir_data_loader
 from jabberjaw.utils.mkt_classes import MktCoord, get_mkt_types, get_mkt_assets, \
     get_points, get_mkt_class
 from jabberjaw.data_manager.data_extractor import *
@@ -10,13 +11,15 @@ data_loaders = {
     "none": DataLoader(),
     None: DataLoader(),
     "EQUITY": equity_stock_loader.EquityStockLoader(),
-    "FX": fx_data_loader.FXDataLoader()
+    "FX": fx_data_loader.FXDataLoader(),
+    "IR": ir_data_loader.IRDataLoader()
 }
 
 # a list of all possible extractors for the different sources 
 sources = {
     "yahoo": DataExtractorYahoo,
-    "morningstar": DataExtractorMorningStar
+    "morningstar": DataExtractorMorningStar,
+    "fred": DataExtractorFred
 }
 
 
@@ -59,7 +62,7 @@ def get_data_loader(mkt_coord: MktCoord):
     if mkt_coord.mkt_asset not in get_mkt_assets(mkt_coord):
         raise Exception("failed to find category in known list")
 
-    if not set(mkt_coord.points).issubset(get_points(mkt_coord)):
+    if mkt_coord.point and mkt_coord.point not in get_points(mkt_coord):
         raise Exception("Points provided are not recognized")
 
     data_loader: DataLoader = DataLoaderFactory.get_loader(mkt_coord)

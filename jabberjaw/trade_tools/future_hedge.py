@@ -28,10 +28,10 @@ def optimal_hedege_ratio(end_date: date, horizon: relativedelta, future: MktCoor
     spot_hist:pd.DataFrame = mkt.get_mkt_history(spot, backdate).pct_change().iloc[1:]
     
     
-    fut_var = future_hist["Adj Close"].std()
-    pos_var = spot_hist["Adj Close"].std()
+    fut_var = future_hist["ADJ CLOSE"].std()
+    pos_var = spot_hist["ADJ CLOSE"].std()
     
-    cor = future_hist["Adj Close"].corr(spot_hist["Adj Close"])
+    cor = future_hist["ADJ CLOSE"].corr(spot_hist["ADJ CLOSE"])
     
     h = cor * pos_var / fut_var
     

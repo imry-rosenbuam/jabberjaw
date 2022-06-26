@@ -66,7 +66,7 @@ def generate_config_ccy_pairs() -> None:
         points_default = [i for i in dp.search(market_coordinates,f'{mkt_class}/{mkt_type}/{mkt_asset}/points',yielded=True)]
         points_default = points_default.pop()[1] if len(points_default) else []
         points = list(set(points_default))
-        existing_value = {'points':points, 'ticker': ticker[0] +ticker[1] + '=X'}
+        existing_value = {'points':points, 'tickers': ticker[0] +ticker[1] + '=X'}
         value = fx_defaults.copy()
         value.update(existing_value)
 

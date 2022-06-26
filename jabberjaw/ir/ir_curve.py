@@ -6,25 +6,32 @@ from dataclasses import dataclass,field
 from abc import ABC, abstractmethod
 from enum import Enum
 from sqlalchemy import false
-from jabberjaw.utils.calendars import DayCountConvention  
+from jabberjaw.utils.calendars import DayCountConvention,CalendarConventions
+from jabberjaw.utils.calendars import HolidayCalenadr
+from typing import List, Dict, Tuple
+
 
 @dataclass
 class Interpolator(ABC):
     
-    @abstractmethod
-    def rate(dt1:date,dt2:date,dcc:DayCountConvention) -> float:
+    def rate(self, dt1:date,dt2:date,dcc:DayCountConvention) -> float:
         return 1
 
 @dataclass
-class BaseCurve:
-    _dcc: DayCountConvention
+class BaseCurve(ABC):
+    _cal_conven: CalendarConventions 
     ref_date:date
 
+    @abstractmethod
+    def index(self, dt: date) -> float:
+        pass
 
 @dataclass
-class Curve(BaseCurve):
+class IRCurve(BaseCurve):
     
     interpolator: Interpolator 
+    
+    tenor: str = None
     
     def get_knots(self) -> list:
         return self.interpolator.knots
@@ -36,7 +43,9 @@ class Curve(BaseCurve):
         return np.exp(-1 * self._rate(self.ref_date,discount_date))
     
     def forward_rate(self, forward_date:date,end_date:date) -> float:
-        return 1
+        return self._rate(forward_date, end_date)/HolidayCalenadr.daycount(self._cal_conven.dcc, forward_date, end_date)
+
+
 
 
 

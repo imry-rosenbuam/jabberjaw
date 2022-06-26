@@ -1,16 +1,43 @@
 from dataclasses import dataclass
 from abc import ABC,abstractclassmethod,abstractmethod
+from jabberjaw.utils.calendars import HolidayCalenadr, CalendarConventions
+from datetime import date, timedelta
+from typing import Tuple, List
+
+
+
 
 @dataclass
-class BaseSegment(ABC):
+class BaseInterpolator(ABC):
+    ref_date: date 
+    cal_conv: CalendarConventions = CalendarConventions()
+
+class CurveSegment(ABC):
     pass
+
+class PolinomialSegment(CurveSegment):
+    a: float = 0
+    b: float = 0
+    c: float = 0
+    d: float = 0
      
 @dataclass     
-class RateSegment(BaseSegment):
-    t0: float
-    t1: float
-    date0: float
-    date1: float
+class RateInterpolator(BaseInterpolator):
+    extrapolate: bool = False
+    extrapolation_style: str = "flat"
+    
+    knots = List[date]    
+    
+    def x(self, dt: date) -> float:
+        i = 0
+        dt0 = self.ref_date
+        
+        #TODO: does it have to be > or >=
+        while dt > self.knots[i]:
+            dt0 = self.knots[i]
+            i += 1
+        
+        return HolidayCalenadr.daycount(self.cal_conv,dt0,dt)/ HolidayCalenadr.daycount(self.cal_conv,dt0,self.knots[i]),i
     
     @abstractmethod
     def ifr(self, t: float) -> float:
@@ -19,61 +46,33 @@ class RateSegment(BaseSegment):
     @abstractmethod
     def int_ifr(self,t:float) -> float:
         pass
-    def x(self, t: float) -> float:
-     return min(self.t1, max(self.t0,t)) - self.t0
     
-class FlatRateSegment(RateSegment):
-    a: float
-    
-    def ifr(self, t: float) -> float:
-        x = self.x(t)
-        return self.a if x <= self.t1 and x >= self.t0 else 0
 
-    def int_ifr(self, t:float) -> float:
-        x = self.x(t)
-        return x * self.a
-    
-class LinearRateSegment(RateSegment):
-    a: float
-    b: float
 
-    def ifr(self, t: float) -> float:
-        x = self.x(t)
-        return x * (self.b - self.a)/(self.t1 - self.t0) if x <= self.t1 and x >= self.t0 else 0
-    
-    def int_ifrrate(self, t: float) -> float:
-        x = self.x(t)
-        return x * (self.a + 0.5 * self.b * x)
-
-class QuadraticSplineRateSegment(RateSegment):
-    a: float
-    b: float
-    c: float
-    
-    def ifr(self, t: float) -> float:
-        x = self.x(t)
-        return self.a + x * (self.b + x * self.c) if x >= self.t0 and x <= self.t1 else 0
-    
-    def int_ifr(self, t: float) -> float:
-        x = min(self.t1,max(self.t0,t)) - self.t0
-        return x * (self.a + x * (0.5 * self.b + x * (1/3 * self.c)))
      
-class CubicSplineRateSegment(RateSegment):
-    a: float
-    b: float
-    c: float
-    d: float
+class CubicSplineInterpolator(RateInterpolator):
     
-    def ifr(self, t: float) -> float:
-        x = self.x(t)
-        return self.a + x * (self.b + x * (self.c + x * self.d)) if x >= self.t0 and x <= self.t1 else 0
+    coffs = List[PolinomialSegment]
     
-    def int_ifr(self, t: float) -> float:
-        x = self.x(t)
-        return x * (self.a + x * (0.5 * self.b + x * (1/3 * self.c + x * (1/4 * self.d))))
+    def ifr(self, dt: date) -> float:
+        x,i = self.x(dt)
+        segment = self.coffs[i]
+        return segment.a + x * (segment.b + x * (segment.c + x * segment.d)) if x >= self.t0 and x <= self.t1 else 0
     
+    def int_ifr(self, dt: date) -> float:
+        x,i = self.x(dt)
+        segment = self.coffs[i]
+        return x * (segment.a + x * (segment.b / 2 + x * (segment.c / 3 + x * segment.d / 4))) if x >= self.t0 and x <= self.t1 else 0
+    
+    def cubic_interp(self, dt0: date,dt1: date,dt:date,coff:PolinomialSegment) -> float:
+        x = HolidayCalenadr.daycount(self.c)
+        return x * (coff.a + x * (0.5 * coff.b + x * (1/3 * coff.c + x * (1/4 * coff.d))))
+    
+    def __post_init__(self):
+        for i in range(len(self.knots)):
+            self.coffs.append(PolinomialSegment())
     
 if __name__ == "__main__":
-    
+
     
     print("Le Fin")

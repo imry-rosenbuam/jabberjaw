@@ -28,7 +28,7 @@ class FXSpotMarketiser(Marketiser):
             try:
                 cls.marketise_fx_spot_pair(ticker,metadata['default_source'],start_date,end_date,overwrite)
             except:
-                print(f"failed to marketise {search}")
+                print(f"failed to marketise {ticker}")
                 
 if __name__ == "__main__":
     ccy = "usdeur"

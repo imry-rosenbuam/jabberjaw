@@ -2,7 +2,7 @@ from abc import ABC,abstractclassmethod,abstractmethod
 
 class Serializable(ABC):
     
-    @abstractmethod
+    #@abstractmethod
     def Serialize(self) -> dict:
         """
         the fucntion serializes the object such that it can be streamed 
@@ -11,7 +11,7 @@ class Serializable(ABC):
         """
         pass
     
-    @abstractclassmethod
+    #@abstractclassmethod
     def DeSerializer(cls, data: dict):
         """the function takes a serialized object and deserialize it to a python object
 

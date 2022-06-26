@@ -122,7 +122,7 @@ class HolidayCalenadr():
                     return preceding
 
     @classmethod
-    def settle_date(cls, calendar: CalendarConventions, dt: datetime, business_days) -> datetime.datetime:
+    def settle_date(cls, calendar: CalendarConventions, dt: datetime.date, business_days) -> datetime.datetime:
         """returns the settlement date given the settle lag
 
         Args:

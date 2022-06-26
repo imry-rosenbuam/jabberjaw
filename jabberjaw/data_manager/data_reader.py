@@ -4,6 +4,8 @@ import datetime
 from abc import ABC, abstractmethod
 
 
+sources = []
+
 class DataReader(ABC):
     """ template class for DataReaders"""
 
@@ -27,13 +29,15 @@ class DataReaderPD(DataReader):
     @abstractmethod
     def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,
                           end_date: datetime.datetime) -> pd.DataFrame:
+        xxx = 1
         df = web.DataReader(ticker, source, start_date, end_date)
         df.reset_index(inplace=True)
-        df.set_index("Date", inplace=True)
+        df.columns = df.columns.str.upper()
+        df.set_index("DATE", inplace=True)
 
         timestamps = list(df.index)
         obs_times = list(map(lambda x: x + pd.Timedelta('1 days') + pd.Timedelta('-1 sec'), timestamps))
-        index = pd.MultiIndex.from_arrays([timestamps, obs_times], names=["Ref_Date", "Obs_Time"])
+        index = pd.MultiIndex.from_arrays([timestamps, obs_times], names=["REF_DATE", "OBS_TIME"])
 
         return pd.DataFrame(index=index, data=df.values, columns=df.columns)
 
