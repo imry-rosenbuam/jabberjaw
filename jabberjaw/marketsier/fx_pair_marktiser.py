@@ -1,7 +1,10 @@
 import datetime
+import logging
 import dpath.util as dp
 from jabberjaw.utils import mkt_classes
 from jabberjaw.data_manager.marketiser import Marketiser
+
+logger = logging.getLogger(__name__)
 
 class FXSpotMarketiser(Marketiser):
     @classmethod
@@ -26,9 +29,9 @@ class FXSpotMarketiser(Marketiser):
 
         for ticker, metadata in fx_spots.items():
             try:
-                cls.marketise_fx_spot_pair(ticker,metadata['default_source'],start_date,end_date,overwrite)
-            except:
-                print(f"failed to marketise {ticker}")
+                cls.marketise_fx_spot_pair(ticker, metadata['default_source'], start_date, end_date, overwrite)
+            except Exception as e:
+                logger.error('Failed to marketise %s: %s', ticker, e, exc_info=True)
                 
 if __name__ == "__main__":
     ccy = "usdeur"

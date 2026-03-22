@@ -1,8 +1,10 @@
 import datetime
+import logging
 import dpath.util as dp
 from jabberjaw.utils import mkt_classes
 from jabberjaw.data_manager.marketiser import Marketiser
-import time
+
+logger = logging.getLogger(__name__)
 
 class IRUSDMarketiser(Marketiser):
     @classmethod
@@ -28,9 +30,9 @@ class IRUSDMarketiser(Marketiser):
 
         for point, metadata in ir_points.items():
             try:
-                cls.marketise_ir_usd_point(point,metadata['default_source'],start_date,end_date,overwrite)
-            except:
-                print(f"failed to marketise {point}")
+                cls.marketise_ir_usd_point(point, metadata['default_source'], start_date, end_date, overwrite)
+            except Exception as e:
+                logger.error('Failed to marketise %s: %s', point, e, exc_info=True)
                 
                 
 if __name__ == "__main__":

@@ -1,5 +1,3 @@
-import pandas as pd
-import numpy as np
 from dataclasses import dataclass, field
 from jabberjaw.utils.instrument import instrument,Instrument
 from enum import Enum
@@ -28,11 +26,8 @@ class FRA(Instrument):
         return self.mkt.get_mkt_data(self.index_mktc)
     
     def price(self, mkt_input: Mkt = None) -> float:
-        direction = 1 if self.direction == fra_direction.PAYER else 0
-        mkt = mkt_input if mkt_input else self.mkt
-        
-                    
-        
-if __name__ == "__init__":
+        raise NotImplementedError("FRA.price() is not yet implemented")
+
+if __name__ == "__main__":
     
     print("Le Fin")

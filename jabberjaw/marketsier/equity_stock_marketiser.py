@@ -1,7 +1,10 @@
 import datetime
+import logging
 import dpath.util as dpath
 from jabberjaw.utils import mkt_classes
 from jabberjaw.data_manager.marketiser import Marketiser
+
+logger = logging.getLogger(__name__)
 
 #TODO: add ccy to make sure that we know the ccy in which the stock is quoted in
 
@@ -38,10 +41,10 @@ class EquityStockMarketiser(Marketiser):
         for ticker, metadata in equity_tickers_to_marketise.items():
             try:
                 cls.marketise_equity_stock_ticker(ticker, metadata['default_source'], start_date, end_date, overwrite=overwrite)
-            except:
-                print(f"failed to marketise {ticker}")
-                
-        print('finished the marketisiation process for {}'.format(xpath))
+            except Exception as e:
+                logger.error('Failed to marketise %s: %s', ticker, e, exc_info=True)
+
+        logger.info('Finished marketisation for %s', xpath)
 
 
 if __name__ == '__main__':

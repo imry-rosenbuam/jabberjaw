@@ -1,78 +1,72 @@
-from dataclasses import dataclass
-from abc import ABC,abstractclassmethod,abstractmethod
+import logging
+from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 from jabberjaw.utils.calendars import HolidayCalenadr, CalendarConventions
-from datetime import date, timedelta
-from typing import Tuple, List
+from datetime import date
+from typing import List
 
-
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class BaseInterpolator(ABC):
-    ref_date: date 
-    cal_conv: CalendarConventions = CalendarConventions()
+    ref_date: date
+    cal_conv: CalendarConventions = field(default_factory=CalendarConventions)
+
 
 class CurveSegment(ABC):
     pass
+
 
 class PolinomialSegment(CurveSegment):
     a: float = 0
     b: float = 0
     c: float = 0
     d: float = 0
-     
-@dataclass     
+
+
+@dataclass
 class RateInterpolator(BaseInterpolator):
     extrapolate: bool = False
     extrapolation_style: str = "flat"
-    
-    knots = List[date]    
-    
+    knots: List[date] = field(default_factory=list)
+
     def x(self, dt: date) -> float:
         i = 0
         dt0 = self.ref_date
-        
-        #TODO: does it have to be > or >=
+
         while dt > self.knots[i]:
             dt0 = self.knots[i]
             i += 1
-        
-        return HolidayCalenadr.daycount(self.cal_conv,dt0,dt)/ HolidayCalenadr.daycount(self.cal_conv,dt0,self.knots[i]),i
-    
+
+        return HolidayCalenadr.daycount(self.cal_conv, dt0, dt) / HolidayCalenadr.daycount(self.cal_conv, dt0, self.knots[i]), i
+
     @abstractmethod
     def ifr(self, t: float) -> float:
         pass
-    
+
     @abstractmethod
-    def int_ifr(self,t:float) -> float:
+    def int_ifr(self, t: float) -> float:
         pass
-    
 
 
-     
+@dataclass
 class CubicSplineInterpolator(RateInterpolator):
-    
-    coffs = List[PolinomialSegment]
-    
-    def ifr(self, dt: date) -> float:
-        x,i = self.x(dt)
-        segment = self.coffs[i]
-        return segment.a + x * (segment.b + x * (segment.c + x * segment.d)) if x >= self.t0 and x <= self.t1 else 0
-    
-    def int_ifr(self, dt: date) -> float:
-        x,i = self.x(dt)
-        segment = self.coffs[i]
-        return x * (segment.a + x * (segment.b / 2 + x * (segment.c / 3 + x * segment.d / 4))) if x >= self.t0 and x <= self.t1 else 0
-    
-    def cubic_interp(self, dt0: date,dt1: date,dt:date,coff:PolinomialSegment) -> float:
-        x = HolidayCalenadr.daycount(self.c)
-        return x * (coff.a + x * (0.5 * coff.b + x * (1/3 * coff.c + x * (1/4 * coff.d))))
-    
-    def __post_init__(self):
-        for i in range(len(self.knots)):
-            self.coffs.append(PolinomialSegment())
-    
-if __name__ == "__main__":
+    coffs: List[PolinomialSegment] = field(default_factory=list)
 
-    
+    def ifr(self, dt: date) -> float:
+        raise NotImplementedError("CubicSplineInterpolator.ifr() is not yet implemented")
+
+    def int_ifr(self, dt: date) -> float:
+        raise NotImplementedError("CubicSplineInterpolator.int_ifr() is not yet implemented")
+
+    def cubic_interp(self, dt0: date, dt1: date, dt: date, coff: PolinomialSegment) -> float:
+        raise NotImplementedError("CubicSplineInterpolator.cubic_interp() is not yet implemented")
+
+    def __post_init__(self):
+        for _ in range(len(self.knots)):
+            self.coffs.append(PolinomialSegment())
+
+
+if __name__ == "__main__":
     print("Le Fin")

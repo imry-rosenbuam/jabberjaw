@@ -1,10 +1,13 @@
+import datetime
+import logging
+import polars as pl
+import dpath.util as dp
 from abc import ABC, abstractmethod
-from jabberjaw import utils
 from jabberjaw.utils import mkt_classes
 from jabberjaw.utils.mkt_classes import MktCoord, get_coord_default_source
 from jabberjaw.data_manager import mkt_data_manager as dm
-import datetime
-import dpath.util as dp
+
+logger = logging.getLogger(__name__)
 
 class Marketiser(ABC):
     """ a class used as a template for the different asset marketisers"""
@@ -42,7 +45,7 @@ class Marketiser(ABC):
         for ticker, metadata in tickers_to_marketise.items():
             cls.marketise_ticker(ticker, metadata['default_source'],start_date,end_date,overwrite)
         
-        print('finished the marketisiation process for {}'.format(xpath))
+        logger.info('Finished marketisation for %s', xpath)
     
     @classmethod
     def marketise_mkt_point(cls, mkt_coord: MktCoord, start_date: datetime.date,
@@ -57,17 +60,17 @@ class Marketiser(ABC):
         for ticker,pnt in tick_pnts:
             mkt_coord.point = pnt if len(points) else None
             df = dm.get_history_mkt_data(mkt_coord)
-            if not df.empty and not overwrite:
-                print(ticker + " already MARKETISED")
+            if not df.is_empty() and not overwrite:
+                logger.info('%s already marketised, skipping', ticker)
                 return None
 
-            print("TRYING to Marketise " + ticker)
+            logger.info('Marketising %s', ticker)
             df_new = dm.extract_data(ticker, source, datetime.datetime.fromordinal(start_date.toordinal()),
-                                    datetime.datetime.fromordinal(end_date.toordinal()))
-            if df.empty:
+                                     datetime.datetime.fromordinal(end_date.toordinal()))
+            if df.is_empty():
                 df = df_new
             else:
-                df.update(df_new)
+                df = pl.concat([df, df_new]).unique(subset=["REF_DATE", "OBS_TIME"], keep="last")
 
             dm.save_mkt_data(mkt_coord, df)
 

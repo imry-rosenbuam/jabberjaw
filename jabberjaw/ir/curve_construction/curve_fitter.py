@@ -1,4 +1,3 @@
-from tkinter import Y
 import numpy as np
 import pandas as pd
 import yaml
@@ -37,7 +36,7 @@ class IRFactory():
         elif inst == "tsy_cm":
             return TreasuryCM(mkt, tenor=tenor, ccy=ccy)
         else:
-            raise "Unkown Instrument specifications have been provided please review inputs"
+            raise ValueError("Unknown instrument specifications have been provided, please review inputs")
 
 if __name__ == "__main__":
     dt = date(year=2022, month=1, day=3)

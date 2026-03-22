@@ -1,10 +1,18 @@
+import datetime
+import logging
+import polars as pl
 from jabberjaw.data_manager.data_loader import DataLoader
 from jabberjaw.equity import equity_stock_loader as equity_stock_loader
 from jabberjaw.fx import fx_data_loader
 from jabberjaw.ir import ir_data_loader
 from jabberjaw.utils.mkt_classes import MktCoord, get_mkt_types, get_mkt_assets, \
     get_points, get_mkt_class
-from jabberjaw.data_manager.data_extractor import *
+from jabberjaw.data_manager.data_extractor import (
+    DataExtractor, DataExtractorYahoo, DataExtractorMorningStar, DataExtractorFred,
+    DataExtractorError,
+)
+
+logger = logging.getLogger(__name__)
 
 # data loaders for each of the asset classes and use-cases
 data_loaders = {
@@ -87,13 +95,13 @@ def get_mkt_data(mkt_coord: MktCoord, ref_date: datetime.date, obs_time: datetim
     return data_loader.load_mkt_data(mkt_coord, ref_date, obs_time)
 
 
-def get_history_mkt_data(mkt_coord: MktCoord) -> pd.DataFrame:
+def get_history_mkt_data(mkt_coord: MktCoord) -> pl.DataFrame:
     """ gets the complete time series for a MktCoord"""
     data_loader = get_data_loader(mkt_coord)
     return data_loader.load_mkt_data_history(mkt_coord)
 
 
-def save_mkt_data(mkt_coord: MktCoord, df: pd.DataFrame):
+def save_mkt_data(mkt_coord: MktCoord, df: pl.DataFrame):
     """ saves the market data given a MktCoord"""
     DataLoader.save_data(mkt_coord, df)
 

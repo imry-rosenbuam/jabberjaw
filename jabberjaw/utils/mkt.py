@@ -1,5 +1,5 @@
 import datetime
-import pandas as pd
+import polars as pl
 from dataclasses import dataclass, field
 from jabberjaw.utils.mkt_classes import MktCoord, get_ticker, singleton, get_coord_default_source, mkt_data_cfg
 import dpath.util as dpath
@@ -56,19 +56,16 @@ class Mkt:
         self._data[mkt_coord.get_mkt_tuple()] = mkt_data_manager.get_mkt_data(mkt_coord, self.ref_date,
                                                                               obs_time=self.obs_time)
         
-    def get_mkt_history(self, mkt_coord: MktCoord, back_date: datetime.date = datetime.date(year=1900, month = 1, day = 1)) -> pd.DataFrame:
+    def get_mkt_history(self, mkt_coord: MktCoord, back_date: datetime.date = datetime.date(year=1900, month=1, day=1)) -> pl.DataFrame:
         hist = mkt_data_manager.get_history_mkt_data(mkt_coord)
-        
-        if not hist.empty:
-            return hist[pd.Timestamp(back_date):]
-        
-        return pd.DataFrame()
 
-    def get_mkt_curve(self, ccy: str, index: str, tenor: str = None ) -> object:
-        
-        
-        
-        return object
+        if not hist.is_empty():
+            return hist.filter(pl.col("REF_DATE") >= back_date)
+
+        return pl.DataFrame()
+
+    def get_mkt_curve(self, ccy: str, index: str, tenor: str = None) -> object:
+        raise NotImplementedError("get_mkt_curve() is not yet implemented")
 
 class Mkt_Factory:
     _mkt: Mkt = None
@@ -88,8 +85,5 @@ if __name__ == '__main__':
     mkt = Mkt(ref_date=dt)
     mkt_c = MktCoord("ir", "usd", "COM-PAPER-NONF","1M")
     mkt_c = MktCoord("fx","currency pair","USDNZD")
-    xxx = mkt.get_mkt_data(mkt_c)
-    print(xxx)
-    #bla = mkt.get_mkt_history(mkt_c, back_date)
-    x = 1
+    print(mkt.get_mkt_data(mkt_c))
     print('le fin')

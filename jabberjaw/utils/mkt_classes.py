@@ -9,9 +9,16 @@ import re
 from dateutil.relativedelta import relativedelta
 from datetime import date
 
-__path: str = os.environ['TSDB_DATA']
+_tsdb_data = os.environ.get('TSDB_DATA')
+if _tsdb_data is None:
+    raise EnvironmentError(
+        "Required environment variable 'TSDB_DATA' is not set. "
+        "Set it to the directory where market data will be stored, e.g.:\n"
+        "  export TSDB_DATA=/path/to/data/"
+    )
+__path: str = _tsdb_data
 
-parser_regex = '^([A-Za-z0-9\s\-]*)(_[A-Za-z0-9\s\-]*)?(_[A-Za-z0-9\s\-]*)?(_[\w\s\-]*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
+parser_regex = r'^([A-Za-z0-9\s\-]*)(_[A-Za-z0-9\s\-]*)?(_[A-Za-z0-9\s\-]*)?(_[\w\s\-]*)?(\.[A-Za-z0-9]*)?(@[A-Za-z0-9]*)?'
 
 if os.path.exists(__path + 'market_coord_cfg.YAML'):
     with open(__path + 'market_coord_cfg.YAML', 'r+') as f:
@@ -166,7 +173,7 @@ def parse_mkt_coord(mkt_coord_str: str) -> MktCoord:
     mkt_class = match[0].replace('_', '')  # get type
     mkt_type = match[1].replace('_', '') if match[1] else None  # get asset
     mkt_asset = match[2].replace('_', '') if match[2] else None  # get class
-    point =  match[3].replace('_', '') if match[2] else None # get point
+    point = match[3].replace('_', '') if match[3] else None  # get point
 
     return MktCoord(mkt_class, mkt_type, mkt_asset, point=point, quote=quote_style, source=source)
 
@@ -223,9 +230,9 @@ def get_mkt_class() -> list:
     return list(mkt_data_cfg().keys())
 
 def tenor_parse(tenor:str) -> relativedelta:
-    regex = "\d{1,2}[MYW]"
+    regex = r"\d{1,2}[MYW]"
     if not re.match(regex, tenor):
-        raise "Illegal Tenor"
+        raise ValueError("Illegal Tenor")
     if tenor[-1] == "M":
         return relativedelta(months=int(tenor[:-1]))
     if tenor[-2:] == "WK":

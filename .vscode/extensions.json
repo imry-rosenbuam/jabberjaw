@@ -1,0 +1,35 @@
+{
+    "recommendations": [
+        // Python core
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.debugpy",
+
+        // Ruff: linter + formatter (replaces black + isort)
+        "charliermarsh.ruff",
+
+        // Jupyter notebooks
+        "ms-toolsai.jupyter",
+
+        // Git
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+
+        // Julia
+        "julialang.language-julia",
+
+        // Data / config file support
+        "tamasfe.even-better-toml",
+        "mechatroner.rainbow-csv",
+        "janisdd.vscode-edit-csv",
+
+        // Remote development
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-containers"
+    ],
+    "unwantedRecommendations": [
+        // Replaced by Ruff
+        "ms-python.black-formatter",
+        "ms-python.isort"
+    ]
+}

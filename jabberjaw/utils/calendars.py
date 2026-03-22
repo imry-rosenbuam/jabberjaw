@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import numpy as np
-import pandas as pd
 import datetime
 from enum import Enum, unique
 from jabberjaw.utils.mkt_classes import singleton
@@ -77,7 +76,7 @@ class CalendarConventions():
     country: str = 'USA'
 
     def __post_init__(self):
-        self.holidays = holidays.CountryHoliday(self.country)
+        self.holidays = holidays.country_holidays(self.country)
 
 
 

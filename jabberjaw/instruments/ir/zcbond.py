@@ -51,7 +51,6 @@ class ZCBond(Instrument):
     def mkt_coord(self) -> MktCoord:
         if not isinstance(self._mkt_coord, MktCoord):
             self._mkt_coord = MktCoord(self.mkt_class, self.mkt_type, self.mkt_asset, self.point)
-            xx = 1
         return self._mkt_coord
     
 

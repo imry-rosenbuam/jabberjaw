@@ -1,6 +1,4 @@
-import pandas as pd
-import numpy as np
-from dataclasses import dataclass,field
+from dataclasses import dataclass, field
 from jabberjaw.utils.instrument import Instrument
 from typing import Optional,Dict
 from jabberjaw.utils.mkt import Mkt
@@ -35,7 +33,8 @@ class Portfolio:
         val = 0
         for instr, amount in self.positions.items():
             val += instr.price(mkt) * amount
-        
+        return val
+
 if __name__ == "__main__":
     xxx = Portfolio("imry is cool")
     pricer = DummyPricer()

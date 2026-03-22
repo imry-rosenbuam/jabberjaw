@@ -1,18 +1,22 @@
-import pandas_datareader as web
-import pandas as pd
+import yfinance as yf
+from fredapi import Fred
+import polars as pl
 import datetime
+import os
+from datetime import timedelta
 from abc import ABC, abstractmethod
 
 
 sources = []
 
+
 class DataReader(ABC):
-    """ template class for DataReaders"""
+    """template class for DataReaders"""
 
     @classmethod
     @abstractmethod
     def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,
-                          end_date: datetime.datetime) -> pd.DataFrame:
+                          end_date: datetime.datetime) -> pl.DataFrame:
         raise Exception("Method not implemented")
 
     @classmethod
@@ -21,32 +25,61 @@ class DataReader(ABC):
         raise Exception("Method not implemented")
 
 
-class DataReaderPD(DataReader):
-    # download from source and convert it to the ref date and obs time schema
-    # in our case the schema is banal as we only have eod data
-    # we are using panda datareader in order to extract data
+def _build_polars_df(pd_df, date_col: str) -> pl.DataFrame:
+    """Adds REF_DATE and OBS_TIME columns and converts to a polars DataFrame."""
+    timestamps = list(pd_df[date_col])
+    pd_df["REF_DATE"] = timestamps
+    pd_df["OBS_TIME"] = [ts + timedelta(days=1) - timedelta(seconds=1) for ts in timestamps]
+    pd_df.drop(columns=[date_col], inplace=True)
+    return pl.from_pandas(pd_df)
+
+
+class DataReaderYahoo(DataReader):
+    """Downloads EOD data from Yahoo Finance via yfinance."""
+
     @classmethod
-    @abstractmethod
-    def download_data_eod(cls, ticker: str, source: str, start_date: datetime.datetime,
-                          end_date: datetime.datetime) -> pd.DataFrame:
-        xxx = 1
-        df = web.DataReader(ticker, source, start_date, end_date)
-        df.reset_index(inplace=True)
-        df.columns = df.columns.str.upper()
-        df.set_index("DATE", inplace=True)
+    def download_data_eod(cls, ticker: str, source: str = "yahoo",
+                          start_date: datetime.datetime = None,
+                          end_date: datetime.datetime = None) -> pl.DataFrame:
+        pd_df = yf.download(ticker, start=start_date, end=end_date, auto_adjust=False, progress=False)
+        pd_df.reset_index(inplace=True)
+        # yfinance >= 0.2 returns MultiIndex columns for single tickers
+        if hasattr(pd_df.columns, 'levels'):
+            pd_df.columns = [col[0] for col in pd_df.columns]
+        pd_df.columns = pd_df.columns.str.upper()
+        return _build_polars_df(pd_df, "DATE")
 
-        timestamps = list(df.index)
-        obs_times = list(map(lambda x: x + pd.Timedelta('1 days') + pd.Timedelta('-1 sec'), timestamps))
-        index = pd.MultiIndex.from_arrays([timestamps, obs_times], names=["REF_DATE", "OBS_TIME"])
+    @classmethod
+    def download_data(cls, ticker: str):
+        raise Exception("Method not implemented")
 
-        return pd.DataFrame(index=index, data=df.values, columns=df.columns)
+
+class DataReaderFred(DataReader):
+    """Downloads time series from FRED via fredapi."""
+
+    @classmethod
+    def download_data_eod(cls, ticker: str, source: str = "fred",
+                          start_date: datetime.datetime = None,
+                          end_date: datetime.datetime = None) -> pl.DataFrame:
+        api_key = os.environ.get("FRED_API_KEY")
+        if not api_key:
+            raise EnvironmentError(
+                "FRED_API_KEY environment variable is not set. "
+                "Get a free key at https://fred.stlouisfed.org/api/key"
+            )
+        fred = Fred(api_key=api_key)
+        series = fred.get_series(ticker, observation_start=start_date, observation_end=end_date)
+        pd_df = series.reset_index()
+        pd_df.columns = ["DATE", ticker.upper()]
+        return _build_polars_df(pd_df, "DATE")
+
+    @classmethod
+    def download_data(cls, ticker: str):
+        raise Exception("Method not implemented")
 
 
 if __name__ == "__main__":
-    # an example how to download data using the data reader, specifically with Pandas DataReader
-    tck = "^FTSE"
     strt = datetime.datetime(year=2015, month=1, day=1)
     end = datetime.datetime(year=2021, month=12, day=31)
-    src = 'yahoo'
-    d = DataReaderPD.download_data_eod(tck, src, strt, end)
-    print(d)
+    print(DataReaderYahoo.download_data_eod("AAPL", start_date=strt, end_date=end))
+    print(DataReaderFred.download_data_eod("DFF", start_date=strt, end_date=end))

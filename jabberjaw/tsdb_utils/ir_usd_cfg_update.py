@@ -1,6 +1,5 @@
 from jabberjaw.utils import mkt_classes
 import mkt_coord_defaults
-import pandas_datareader as pdr
 from datetime import datetime
 import dpath.util as dp
 import mkt_coord_defaults as mktc_defaults

@@ -1,16 +1,11 @@
 from dataclasses import dataclass, field
-from re import template
-import pandas as pd
-import numpy as np
 from jabberjaw.utils.calendars import CalendarConventions, HolidayCalenadr
 from jabberjaw.utils.mkt import Mkt
-from typing import Optional
 from jabberjaw.utils.mkt_classes import MktCoord
 import datetime
 from datetime import date
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import ABC, abstractmethod
 from jabberjaw.utils.helper_classes import Serializable
-from jabberjaw.utils.calendars import CalendarConventions
 
 def instrument(func):
     return dataclass(func)
@@ -39,7 +34,7 @@ class Instrument(Serializable,ABC):
     
     def __post_init__(self, inst_type: str):
         if self.ccy == "" or inst_type is None:
-            raise "User failed to give ccy or instrument type to instrument instance"
+            raise ValueError("User failed to give ccy or instrument type to instrument instance")
         self._instrument_type = inst_type
         self._calendar_conventions = CalendarConventions()
     
@@ -86,12 +81,17 @@ class Instrument(Serializable,ABC):
     @property
     def settlement_date(self) -> date:
         if not self._settlement_date:
-            raise "Set Date has not been impolemented"
+            raise NotImplementedError("Settlement date has not been implemented")
         return self._settlement_date
     @property
     def mkt_coord(self) -> MktCoord:
         return self._mkt_coord
     
+class DummyPricer:
+    def price(self, instrument) -> float:
+        return 1.0
+
+
 @instrument
 class DummyInstrument(Instrument):
         

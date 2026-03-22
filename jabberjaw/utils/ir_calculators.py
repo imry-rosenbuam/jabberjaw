@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 def continious_compounding(rate: float, time: float) -> float:
